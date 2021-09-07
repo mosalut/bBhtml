@@ -1,0 +1,21 @@
+body {
+	margin: 0px auto;
+}
+
+header {
+	width: 100%;
+	height: 48px;
+	background-color: #09c271;
+}
+
+header>div {
+	padding-left: 10%;
+	color: #eeeeee;
+	height: 48px;
+	line-height: 48px;
+}
+
+header>div>span {
+	font-weight: bold;
+	font-size: 18px;
+}
