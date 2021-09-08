@@ -1,0 +1,13 @@
+#message {
+	margin: 20px auto;
+	width: 200px;
+}
+
+input {
+	width: 200px;
+	height: 48px;
+	border: 0px;
+	border-radius: 5px;
+	background-color: #09c271;
+	color: #eeeeee;
+}

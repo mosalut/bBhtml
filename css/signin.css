@@ -1,0 +1,21 @@
+#sign_in {
+	margin: 20px auto;
+	width: 300px;
+}
+
+#sign_in input {
+	margin: 1px 0px auto 0px;
+	padding-right: 5px;
+	padding-left: 5px;
+	border: none;
+	border-radius: 5px;
+	width: 290px;
+	height: 32px;
+	background-color: #93c293;
+}
+
+#sign_in input[type="submit"], #sign_in input[type="reset"] {
+	width: 300px;
+	color: #eeeeee;
+	background-color: #09c271;
+}
