@@ -2,6 +2,7 @@
 
 var getCapitalBXmlhttp;
 var getLowcaseBXmlhttp;
+var getCirculationXmlhttp;
 
 function getCData(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
@@ -41,6 +42,9 @@ function getLData(e) {
 
 		b.innerText = response.data;
 	}
+}
+
+function getCirculation {
 }
 
 var key = sessionStorage.getItem("Bb_key");
