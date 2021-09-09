@@ -1,4 +1,54 @@
-#capitalB, #lowcaseB {
-	margin: 20px auto;
-	text-align: center;
+header>nav {
+	position: fixed;
+	z-index: 10px;
+	margin-top: 20px;
+	padding-top: 10px;
+	padding-right: 20px;
+	padding-bottom: 10px;
+	text-align: right;
+	width: 70px;
+	background-color: #93c293;
+	color: #eeeeee;
+	box-shadow: 3px 3px 4px 2px #307730;
+}
+
+#globalData {
+	margin: 0px auto;
+	display: -webkit-flex;
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+
+ul {
+	margin-left: 0px;
+	padding-right: 10%;
+	padding-left: 10%;
+}
+
+li {
+	margin: 0px auto;
+	list-style: none;
+	padding-left: 0px;
+	margin-left: 0px;
+}
+
+li>details>aside {
+	display: -webkit-flex;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+#curve {
+	margin: 0px auto;
+	display: -webkit-flex;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+#curve>figure>canvas {
+	background-color: #000000;
 }
