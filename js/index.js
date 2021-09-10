@@ -9,21 +9,47 @@ var sse;
 
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
-		console.log(e.target.responseText);
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
-		if(!response.success){
-			if(response.message == "not auth") {
-				sessionStorage.clear();
-				window.location.href = "/signin.html";
-				return;
-			}
-			return;
-		}
+		if(successed(response)) {
+			xmlhttp.open("GET", networking + "cirulations?account=" + account + "&key=" + key);
+			xmlhttp.send();
+			xmlhttp.onreadystatechange = getCirulations;
 
-		sseProcess();
+			sseProcess();
+		}
 	}
+}
+
+function successed(response) {
+	if(!response.success){
+		if(response.message == "not auth") {
+			sessionStorage.clear();
+			window.location.href = "/signin.html";
+			return false;
+		}
+		return false;
+	}
+
+	return true;
+}
+
+function getCirulations(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+		console.log(response);
+
+		if(successed(response)) {
+			initCirulations(response.data);
+		}
+	}
+}
+
+function initCirulations(cirulations) {
+	let max = Math.max(...cirulations);
+	let min = Math.min(...cirulations);
+	console.log(max, min);
 }
 
 function main() {
@@ -40,13 +66,16 @@ function main() {
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 
-	xmlhttp.open("POST", network + "checksignin?account=" + account + "&key=" + key);
-	xmlhttp.send();
+	xmlhttp.open("POST", networking + "checksignin");
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("account=" + account + "&key=" + key);
 	xmlhttp.onreadystatechange = checkSignIn;
+
+	canvasControl();
 }
 
 function sseProcess() {
-	sse =  new EventSource(network + "sse");
+	sse =  new EventSource(networking + "sse");
 	console.log(sse);
 
 	sse.onopen = function(e) {
@@ -54,12 +83,12 @@ function sseProcess() {
 	}
 
 	sse.onmessage = function(e) {
-		console.log("onmessage", e);
+	//	console.log("onmessage", e);
 	}
 
-	sse.addEventListener("getcapitalb", function(e) {
+	sse.addEventListener("capitalb", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -69,9 +98,9 @@ function sseProcess() {
 		document.getElementById("unlockedB").innerText = response.data.unlocked;
 	})
 
-	sse.addEventListener("getlowcaseb", function(e) {
+	sse.addEventListener("lowcaseb", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -82,7 +111,7 @@ function sseProcess() {
 
 	sse.addEventListener("totalputin", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -93,7 +122,7 @@ function sseProcess() {
 
 	sse.addEventListener("settled", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -104,7 +133,7 @@ function sseProcess() {
 
 	sse.addEventListener("rewarded", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -115,7 +144,7 @@ function sseProcess() {
 
 	sse.addEventListener("filprice", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		if(!response.success) {
 			return;
@@ -127,6 +156,39 @@ function sseProcess() {
 	sse.onerror = function(e) {
 		console.log("onerror", e);
 		sse.close()
+	}
+}
+
+function canvasControl() {
+	let canvases = document.querySelectorAll("#curve canvas");
+	let ctxes = new Array();
+
+	for(let i = 0; i < canvases.length; i++) {
+		ctxes[i] = initCanvas(canvases[i]);
+	}
+
+	for (let i = 0; i < canvases.length; i++) {
+		canvases[i].onclick = function() {
+			let parentNode = this.parentNode;
+			let backupStyle = parentNode.style;
+
+			parentNode.style.position = "fixed";
+			parentNode.style.top = "0px";
+			parentNode.style.left = "0px";
+			parentNode.style.zIndex = "1";
+			let width = document.body.clientWidth;
+			parentNode.style.width = width + "px";
+			parentNode.style.height = width * 9 / 25 + "px";
+			this.style.width = "100%";
+			this.style.height = "100%";
+			this.nextElementSibling.style.display = "block";
+			this.nextElementSibling.onclick = function() {
+				parentNode.style = backupStyle;
+				this.style.display = "none";
+				this.style.width = parentNode.style.width;
+				this.style.height = parentNode.style.height;
+			}
+		}
 	}
 }
 

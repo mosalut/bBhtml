@@ -8,6 +8,7 @@
 		<link type="text/css" rel="stylesheet" href="css/style.css" />
 		<link type="text/css" rel="stylesheet" href="css/index.css" />
 		<script type="text/javascript" src="js/global.js"></script>
+		<script type="text/javascript" src="js/initcanvas.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
 	</head>
 	<body>
@@ -55,15 +56,24 @@
 		<section id="curve">
 			<figure>
 				<figcaption>最新流动性/日</figcaption>
-				<canvas width="480" height="240"></canvas>
+				<div>
+					<canvas width="480" height="240"></canvas>
+					<div id="close">╳</div>
+				</div>
 			</figure>
 			<figure>
 				<figcaption>24小时交易量/日</figcaption>
-				<canvas width="480" height="240"></canvas>
+				<div>
+					<canvas width="480" height="240"></canvas>
+					<div id="close">╳</div>
+				</div>
 			</figure>
 			<figure>
 				<figcaption>已奖励CFIL/日</figcaption>
-				<canvas width="480" height="240"></canvas>
+				<div>
+					<canvas width="480" height="240"></canvas>
+					<div id="close">╳</div>
+				</div>
 			</figure>
 		</section>
 		<section id="lockedFilNode" class="center">
