@@ -1,3 +1,3 @@
 "use strict";
 
-var network = "http://47.98.204.151:8887/"
+var networking = "http://47.98.204.151:8887/"
