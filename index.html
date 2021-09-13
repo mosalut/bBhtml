@@ -7,22 +7,24 @@
 		<title>B & b</title>
 		<link type="text/css" rel="stylesheet" href="css/style.css" />
 		<link type="text/css" rel="stylesheet" href="css/index.css" />
+		<script type="text/javascript" src="js/widget.js"></script>
 		<script type="text/javascript" src="js/global.js"></script>
-		<script type="text/javascript" src="js/initcanvas.js"></script>
+		<script type="text/javascript" src="js/putindata.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
 	</head>
 	<body>
 		<header>
 			<div><span>B&nbsp;&amp;&nbsp;b&nbsp;</span><sup>information&nbsp;system</sup></div>
 			<nav>
-				<h4>bsc</h4>
-				<h4>bsd</h4>
-				<h4>bse</h4>
+				<h2>链</h2>
+				<h4 style="color: #ff0000">BSC</h4>
+				<h4>BSD</h4>
+				<h4>BSE</h4>
 			</nav>
 		</header>
 		<section>
 			<div id="globalData">
-				<div class="center">
+				<!--div class="center">
 					<h4>B:</h4>
 					<div id="capitalBLocked">
 						<label for="lockedB">locked B:</label><span id="lockedB">未知</span>
@@ -34,22 +36,50 @@
 				<div class="center">
 					<h4>b:</h4>
 					<div id="b">未知</div>
+				</div-->
+				<div class="center">
+					<h5>最新总资产</h5>
+					<div id="total_put_in">未知</div>
 				</div>
 				<div class="center">
-					<h5>存入总资产</h5>
-					<div id="totalPutIn">未知</div>
+					<h5>APY%</h5>
+					<div id="apy_rate">未知</div>
 				</div>
 				<div class="center">
-					<h5>已结息CFIL</h5>
-					<div id="settled">未知</div>
+					<h5>CFIL:FIL</h5>
+					<div id="cfil_to_fil">未知</div>
+				</div>
+				<div class="center">
+					<h4>准备金率s%</h4>
+					<div id="lrr">未知</div>
+				</div>
+				<div class="center">
+					<h4>可流通量b:</h4>
+					<div id="lowcase_b">未知</div>
+				</div>
+				<div class="center">
+					<h4>锁仓量B:</h4>
+					<div id="capital_b">未知</div>
+				</div>
+				<div class="center">
+					<h5>损耗值</h5>
+					<div id="loss">未知</div>
+				</div>
+				<div class="center">
+					<h5>B锁仓量投资FIL节点</h5>
+					<div id="locked_fil_node">未知</div>
+				</div>
+				<div class="center">
+					<h5>已提取CFIL</h5>
+					<div id="drawn_cfil">未知</div>
 				</div>
 				<div class="center">
 					<h5>已奖励Faci</h5>
-					<div id="rewarded">未知</div>
+					<div id="rewarded_faci">未知</div>
 				</div>
 				<div class="center">
-					<h5>FIL报价</h5>
-					<div id="filPrice">未知</div>
+					<h5>Faci总发行量</h5>
+					<div id="faci_total">未知</div>
 				</div>
 			</div>
 		</section>
@@ -57,21 +87,21 @@
 			<figure>
 				<figcaption>最新流动性/日</figcaption>
 				<div>
-					<canvas width="480" height="240"></canvas>
+					<canvas width="480" height="240" data-text="流动性"></canvas>
 					<div id="close">╳</div>
 				</div>
 			</figure>
 			<figure>
 				<figcaption>24小时交易量/日</figcaption>
 				<div>
-					<canvas width="480" height="240"></canvas>
+					<canvas width="480" height="240" data-text="交易量"></canvas>
 					<div id="close">╳</div>
 				</div>
 			</figure>
 			<figure>
 				<figcaption>已奖励CFIL/日</figcaption>
 				<div>
-					<canvas width="480" height="240"></canvas>
+					<canvas width="480" height="240" data-text="CFIL"></canvas>
 					<div id="close">╳</div>
 				</div>
 			</figure>

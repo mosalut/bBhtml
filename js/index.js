@@ -1,11 +1,17 @@
 "use strict";
 
+const COLORLIGHT = "#eeeeee";
+const COLORBOLD = "#ffffff";
+const FONTSIZE = "12px";
+
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
 
 var xmlhttp;
+var xmlhttpCirulations; 
+var xmlhttpWorthdeposits; 
+var xmlhttpDrawns; 
 var sse;
-
 
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
@@ -13,9 +19,17 @@ function checkSignIn(e) {
 		console.log(response);
 
 		if(successed(response)) {
-			xmlhttp.open("GET", networking + "cirulations?account=" + account + "&key=" + key);
-			xmlhttp.send();
-			xmlhttp.onreadystatechange = getCirulations;
+			xmlhttpCirulations.open("GET", networking + "cirulations?account=" + account + "&key=" + key);
+			xmlhttpCirulations.send();
+			xmlhttpCirulations.onreadystatechange = getCirulations;
+
+			xmlhttpWorthdeposits.open("GET", networking + "worthdeposits?account=" + account + "&key=" + key);
+			xmlhttpWorthdeposits.send();
+			xmlhttpWorthdeposits.onreadystatechange = getWorthDeposits;
+
+			xmlhttpDrawns.open("GET", networking + "drawns?account=" + account + "&key=" + key);
+			xmlhttpDrawns.send();
+			xmlhttpDrawns.onreadystatechange = getDrawns;
 
 			sseProcess();
 		}
@@ -41,15 +55,40 @@ function getCirulations(e) {
 		console.log(response);
 
 		if(successed(response)) {
-			initCirulations(response.data);
+			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0]);
+			polygen.p = {clear: false, cirulations: response.data}; 
+			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		}
 	}
 }
 
-function initCirulations(cirulations) {
-	let max = Math.max(...cirulations);
-	let min = Math.min(...cirulations);
-	console.log(max, min);
+function getWorthDeposits(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+		console.log(response);
+
+		if(successed(response)) {
+			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1]);
+			polygen.p = {clear: false, cirulations: response.data}; 
+			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		}
+	}
+}
+
+function getDrawns(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+		console.log(response);
+
+		if(successed(response)) {
+			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2]);
+			polygen.p = {clear: false, cirulations: response.data}; 
+			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		}
+	}
 }
 
 function main() {
@@ -62,16 +101,31 @@ function main() {
 
 	if (window.XMLHttpRequest) {
 		xmlhttp = new XMLHttpRequest();
+		xmlhttpCirulations = new XMLHttpRequest();
+		xmlhttpWorthdeposits = new XMLHttpRequest();
+		xmlhttpDrawns = new XMLHttpRequest();
 	} else {
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpCirulations = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpWorthdeposits = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpDrawns = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 
 	xmlhttp.open("POST", networking + "checksignin");
 	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlhttp.send("account=" + account + "&key=" + key);
 	xmlhttp.onreadystatechange = checkSignIn;
+}
 
-	canvasControl();
+function syncOver(sync) {
+	if(sync == 0) {
+		let lowcaseb = parseFloat(document.getElementById("lowcase_b").innerText); 
+		let capitalb = parseFloat(document.getElementById("capital_b").innerText); 
+		console.log("lowcaseb:", lowcaseb);
+		console.log("capitalb:", capitalb);
+		document.getElementById("total_put_in").innerText = lowcaseb + capitalb; // 最新总资产
+		document.getElementById("lrr").innerText = (lowcaseb / (lowcaseb + capitalb) * 100).toFixed(4) + "%"; // 准备金率
+	}
 }
 
 function sseProcess() {
@@ -86,7 +140,10 @@ function sseProcess() {
 	//	console.log("onmessage", e);
 	}
 
-	sse.addEventListener("capitalb", function(e) {
+	let sync = 2;
+	
+	// APY%
+	sse.addEventListener("apyrate", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -94,22 +151,55 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("lockedB").innerText = response.data.locked;
-		document.getElementById("unlockedB").innerText = response.data.unlocked;
+		document.getElementById("apy_rate").innerText = response.data.toFixed(4);
 	})
+	
+	// CFIL:FIL
+	sse.addEventListener("cfiltofil", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
 
+		if(!response.success) {
+			return;
+		}
+
+		document.getElementById("cfil_to_fil").innerText = response.data.toFixed(4);
+	})
+	
+	// 可流通量b
 	sse.addEventListener("lowcaseb", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
 		if(!response.success) {
+			sync--
 			return;
 		}
 
-		document.getElementById("b").innerText = response.data;
+		document.getElementById("lowcase_b").innerText = response.data.toFixed(4);
+		sync--
+
+		syncOver(sync);
 	})
 
-	sse.addEventListener("totalputin", function(e) {
+	// 锁仓量B
+	sse.addEventListener("capitalb", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+
+		if(!response.success) {
+			sync--
+			return;
+		}
+
+		document.getElementById("capital_b").innerText = response.data.toFixed(4);
+		sync--
+
+		syncOver(sync);
+	})
+
+	// 损耗值
+	sse.addEventListener("loss", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -117,10 +207,11 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("totalPutIn").innerText = response.data;
+		document.getElementById("loss").innerText = response.data.toFixed(4);
 	})
 
-	sse.addEventListener("settled", function(e) {
+	// B锁仓量投资FIL节点
+	sse.addEventListener("lockedfilnode", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -128,10 +219,11 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("settled").innerText = response.data;
+		document.getElementById("locked_fil_node").innerText = response.data.toFixed(4);
 	})
 
-	sse.addEventListener("rewarded", function(e) {
+	// 已提取CFIL
+	sse.addEventListener("drawncfil", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -139,10 +231,11 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("rewarded").innerText = response.data;
+		document.getElementById("drawn_cfil").innerText = response.data.toFixed(4);
 	})
 
-	sse.addEventListener("filprice", function(e) {
+	// 已奖励Faci
+	sse.addEventListener("rewardedfaci", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -150,45 +243,24 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("filPrice").innerText = response.data;
+		document.getElementById("rewarded_faci").innerText = response.data.toFixed(4);
+	})
+
+	// Faci总发行量
+	sse.addEventListener("facitotal", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+
+		if(!response.success) {
+			return;
+		}
+
+		document.getElementById("faci_total").innerText = response.data.toFixed(4);
 	})
 
 	sse.onerror = function(e) {
 		console.log("onerror", e);
 		sse.close()
-	}
-}
-
-function canvasControl() {
-	let canvases = document.querySelectorAll("#curve canvas");
-	let ctxes = new Array();
-
-	for(let i = 0; i < canvases.length; i++) {
-		ctxes[i] = initCanvas(canvases[i]);
-	}
-
-	for (let i = 0; i < canvases.length; i++) {
-		canvases[i].onclick = function() {
-			let parentNode = this.parentNode;
-			let backupStyle = parentNode.style;
-
-			parentNode.style.position = "fixed";
-			parentNode.style.top = "0px";
-			parentNode.style.left = "0px";
-			parentNode.style.zIndex = "1";
-			let width = document.body.clientWidth;
-			parentNode.style.width = width + "px";
-			parentNode.style.height = width * 9 / 25 + "px";
-			this.style.width = "100%";
-			this.style.height = "100%";
-			this.nextElementSibling.style.display = "block";
-			this.nextElementSibling.onclick = function() {
-				parentNode.style = backupStyle;
-				this.style.display = "none";
-				this.style.width = parentNode.style.width;
-				this.style.height = parentNode.style.height;
-			}
-		}
 	}
 }
 
