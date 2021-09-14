@@ -99,6 +99,11 @@ function main() {
 		return;
 	}
 
+	let dataContainers = document.querySelectorAll(".center>div");
+	for(let i = 0; i < dataContainers.length; i++) {
+		loading(dataContainers[i]);
+	}
+
 	if (window.XMLHttpRequest) {
 		xmlhttp = new XMLHttpRequest();
 		xmlhttpCirulations = new XMLHttpRequest();
@@ -136,6 +141,10 @@ function sseProcess() {
 		console.log("onopen", e);
 	}
 
+	sse.onerror = function(e) {
+		console.log("onerror", e);
+	}
+
 	sse.onmessage = function(e) {
 	//	console.log("onmessage", e);
 	}
@@ -147,23 +156,28 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("apy_rate");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("apy_rate").innerText = response.data.toFixed(4);
+		document.getElementById("apy_rate").innerText = floatNumberProcess(response.data);
 	})
 	
 	// CFIL:FIL
 	sse.addEventListener("cfiltofil", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
+		console.log(e);
 
+		let dom = document.getElementById("cfil_to_fil");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("cfil_to_fil").innerText = response.data.toFixed(4);
+		dom.innerText = "1:" + floatNumberProcess(response.data);
 	})
 	
 	// 可流通量b
@@ -171,12 +185,14 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("lowcase_b");
 		if(!response.success) {
+			dom.innerText = response.message;
 			sync--
 			return;
 		}
 
-		document.getElementById("lowcase_b").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 		sync--
 
 		syncOver(sync);
@@ -187,12 +203,14 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("capital_b");
 		if(!response.success) {
+			dom.innerText = response.message;
 			sync--
 			return;
 		}
 
-		document.getElementById("capital_b").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 		sync--
 
 		syncOver(sync);
@@ -203,35 +221,42 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("loss");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("loss").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 	})
 
-	// B锁仓量投资FIL节点
-	sse.addEventListener("lockedfilnode", function(e) {
+	// 已提取CFIL
+	sse.addEventListener("drawnfil", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("drawn_fil");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("locked_fil_node").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 	})
 
+	/*
 	// 已提取CFIL
 	sse.addEventListener("drawncfil", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("drawn_cfil");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("drawn_cfil").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 	})
 
 	// 已奖励Faci
@@ -239,11 +264,13 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("rewarded_faci");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("rewarded_faci").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 	})
 
 	// Faci总发行量
@@ -251,17 +278,15 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
+		let dom = document.getElementById("faci_total");
 		if(!response.success) {
+			dom.innerText = response.message;
 			return;
 		}
 
-		document.getElementById("faci_total").innerText = response.data.toFixed(4);
+		dom.innerText = floatNumberProcess(response.data);
 	})
-
-	sse.onerror = function(e) {
-		console.log("onerror", e);
-		sse.close()
-	}
+	*/
 }
 
 window.onload = main;

@@ -1,25 +1,3 @@
-header>nav {
-	position: fixed;
-	z-index: 10px;
-	margin-top: 100px;
-	padding-top: 10px;
-	padding-right: 20px;
-	padding-bottom: 10px;
-	padding-left: 20px;
-	width: 70px;
-	background-color: #93c293;
-	box-shadow: 3px 3px 4px 2px #307730;
-}
-
-header>nav>h2 {
-	color: #373944;
-}
-
-header>nav>h4 {
-	color: #eeeeee;
-	text-align: right;
-}
-
 #globalData {
 	margin: 0px auto;
 	width: 80%;

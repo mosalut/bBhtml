@@ -4,9 +4,10 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 		<meta charset="utf-8" />
 		<meta http-equiv="Access-Control-Allow-Origin" content="*">
-		<title>B & b</title>
+		<link rel="shortcut icon" href="img/favicon.ico" />
 		<link type="text/css" rel="stylesheet" href="css/style.css" />
 		<link type="text/css" rel="stylesheet" href="css/index.css" />
+		<title>Faci&nbsp;operation&nbsp;system</title>
 		<script type="text/javascript" src="js/widget.js"></script>
 		<script type="text/javascript" src="js/global.js"></script>
 		<script type="text/javascript" src="js/putindata.js"></script>
@@ -14,73 +15,63 @@
 	</head>
 	<body>
 		<header>
-			<div><span>B&nbsp;&amp;&nbsp;b&nbsp;</span><sup>information&nbsp;system</sup></div>
+			<div id="title">
+				<span>Faci&nbsp;operation&nbsp;system</span>
+			</div>
 			<nav>
-				<h2>链</h2>
-				<h4 style="color: #ff0000">BSC</h4>
-				<h4>BSD</h4>
-				<h4>BSE</h4>
+				<div>
+					<select>
+						<option value="0">BSC</option>
+					</select>
+				</div>
 			</nav>
 		</header>
 		<section>
 			<div id="globalData">
-				<!--div class="center">
-					<h4>B:</h4>
-					<div id="capitalBLocked">
-						<label for="lockedB">locked B:</label><span id="lockedB">未知</span>
-					</div>
-					<div id="capitalBUnlocked">
-						<label for="unlockedB">unlocked B:</label><span id="unlockedB">未知</span>
-					</div>
-				</div>
-				<div class="center">
-					<h4>b:</h4>
-					<div id="b">未知</div>
-				</div-->
 				<div class="center">
 					<h5>最新总资产</h5>
-					<div id="total_put_in">未知</div>
+					<div id="total_put_in"></div>
 				</div>
 				<div class="center">
 					<h5>APY%</h5>
-					<div id="apy_rate">未知</div>
+					<div id="apy_rate"></div>
 				</div>
 				<div class="center">
 					<h5>CFIL:FIL</h5>
-					<div id="cfil_to_fil">未知</div>
+					<div id="cfil_to_fil"></div>
 				</div>
 				<div class="center">
-					<h4>准备金率s%</h4>
-					<div id="lrr">未知</div>
+					<h5>准备金率s%</h5>
+					<div id="lrr"></div>
 				</div>
 				<div class="center">
-					<h4>可流通量b:</h4>
-					<div id="lowcase_b">未知</div>
+					<h5>可流通量b:</h5>
+					<div id="lowcase_b"></div>
 				</div>
 				<div class="center">
-					<h4>锁仓量B:</h4>
-					<div id="capital_b">未知</div>
+					<h5>锁仓量B:</h5>
+					<div id="capital_b"></div>
 				</div>
 				<div class="center">
 					<h5>损耗值</h5>
-					<div id="loss">未知</div>
+					<div id="loss"></div>
 				</div>
 				<div class="center">
-					<h5>B锁仓量投资FIL节点</h5>
-					<div id="locked_fil_node">未知</div>
+					<h5>累计已提取FIL</h5>
+					<div id="drawn_fil"></div>
 				</div>
-				<div class="center">
+				<!--div class="center">
 					<h5>已提取CFIL</h5>
-					<div id="drawn_cfil">未知</div>
+					<div id="drawn_cfil" data-loaded="false"></div>
 				</div>
 				<div class="center">
 					<h5>已奖励Faci</h5>
-					<div id="rewarded_faci">未知</div>
+					<div id="rewarded_faci" data-loaded="false"></div>
 				</div>
 				<div class="center">
 					<h5>Faci总发行量</h5>
-					<div id="faci_total">未知</div>
-				</div>
+					<div id="faci_total" data-loaded="false"></div>
+				</div-->
 			</div>
 		</section>
 		<section id="curve">
@@ -99,7 +90,7 @@
 				</div>
 			</figure>
 			<figure>
-				<figcaption>已奖励CFIL/日</figcaption>
+				<figcaption>已提取FIL/日</figcaption>
 				<div>
 					<canvas width="480" height="240" data-text="CFIL"></canvas>
 					<div id="close">╳</div>
@@ -110,7 +101,7 @@
 			<h5>B锁仓量投资FIL节点</h5>
 			<ul>
 				<li>
-					<details>
+					<details open>
 						<summary>xxx</summary>
 						<aside>
 							<div>
@@ -134,7 +125,7 @@
 					</details>
 				</li>
 				<li>
-					<details>
+					<details open>
 						<summary>yyy</summary>
 						<aside>
 							<div>
