@@ -54,12 +54,15 @@ function getCirulations(e) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
-		if(successed(response)) {
-			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0]);
-			polygen.p = {clear: false, cirulations: response.data}; 
-			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
 		}
+
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0]);
+		polygen.p = {clear: false, cirulations: response.data}; 
+		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 	}
 }
 
@@ -68,12 +71,15 @@ function getWorthDeposits(e) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
-		if(successed(response)) {
-			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1]);
-			polygen.p = {clear: false, cirulations: response.data}; 
-			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
 		}
+
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1]);
+		polygen.p = {clear: false, cirulations: response.data}; 
+		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 	}
 }
 
@@ -82,13 +88,44 @@ function getDrawns(e) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
-		if(successed(response)) {
-			let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2]);
-			polygen.p = {clear: false, cirulations: response.data}; 
-			polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-			polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
 		}
+
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2]);
+		polygen.p = {clear: false, cirulations: response.data}; 
+		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 	}
+}
+
+function responseSignout(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+		console.log(response);
+
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
+		}
+
+		sessionStorage.clear();
+		window.location.href = "/signin.html";
+	}
+}
+
+function signout(e) {
+	let xmlhttp; 
+	if (window.XMLHttpRequest) {
+		xmlhttp = new XMLHttpRequest();
+	} else {
+		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	xmlhttp.open("GET", networking + "signout?account=" + account + "&key=" + key);
+	xmlhttp.send();
+	xmlhttp.onreadystatechange = responseSignout;
 }
 
 function main() {
@@ -98,6 +135,12 @@ function main() {
 		window.location.href = "/signin.html";
 		return;
 	}
+
+	let accountName = document.querySelector("header #account");
+	accountName.value = account;
+
+	let signoutButton = document.querySelector("header #signout");
+	signoutButton.onclick = signout
 
 	let dataContainers = document.querySelectorAll(".center>div");
 	for(let i = 0; i < dataContainers.length; i++) {
