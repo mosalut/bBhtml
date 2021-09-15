@@ -205,14 +205,13 @@ function sseProcess() {
 			return;
 		}
 
-		document.getElementById("apy_rate").innerText = floatNumberProcess(response.data);
+		document.getElementById("apy_rate").innerText = floatNumberProcess(parseFloat(response.data));
 	})
 	
 	// CFIL:FIL
 	sse.addEventListener("cfiltofil", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
-		console.log(e);
 
 		let dom = document.getElementById("cfil_to_fil");
 		if(!response.success) {
@@ -220,7 +219,7 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = "1:" + floatNumberProcess(response.data);
+		dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data));
 	})
 	
 	// 可流通量b
@@ -235,7 +234,7 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(response.data);
+		dom.innerText = floatNumberProcess(parseFloat(response.data));
 		sync--
 
 		syncOver(sync);
@@ -253,7 +252,7 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(response.data);
+		dom.innerText = floatNumberProcess(parseFloat(response.data));
 		sync--
 
 		syncOver(sync);
@@ -262,7 +261,7 @@ function sseProcess() {
 	// 损耗值
 	sse.addEventListener("loss", function(e) {
 		let response = JSON.parse(e.data);
-	//	console.log(response);
+		console.log(response);
 
 		let dom = document.getElementById("loss");
 		if(!response.success) {
@@ -270,13 +269,13 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(response.data);
+		dom.innerText = floatNumberProcess(parseFloat(response.data));
 	})
 
 	// 已提取CFIL
 	sse.addEventListener("drawnfil", function(e) {
 		let response = JSON.parse(e.data);
-	//	console.log(response);
+		console.log(response);
 
 		let dom = document.getElementById("drawn_fil");
 		if(!response.success) {
@@ -284,7 +283,7 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(response.data);
+		dom.innerText = floatNumberProcess(parseFloat(response.data));
 	})
 
 	/*
