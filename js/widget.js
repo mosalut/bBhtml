@@ -52,11 +52,12 @@ Canvas.prototype.zoomControl = function(father, colorLight, colorBold, fontSize,
 	}
 }
 
-var Polygon = function(dom) {
-	this.resize(dom);
+var Polygon = function(dom, peroid) {
 	this.p = {};
 	this.object = new Canvas(dom);
 	this.moveData = [];
+	this.peroid = peroid;
+	this.resize(dom);
 }
 
 Polygon.prototype.resize = function(dom) {
@@ -66,6 +67,7 @@ Polygon.prototype.resize = function(dom) {
 	this.coordinateHeight = dom.height * 80 / 100;
 	this.unitWidth = this.coordinateWidth / 24;
 	this.unitHeight = this.coordinateHeight / 10;
+	this.periodUnitWidth = this.unitWidth / this.peroid;
 }
 
 Polygon.prototype.draw = function(colorLight, colorBold, fontSize, custom) {
@@ -115,10 +117,3 @@ Polygon.prototype.draw = function(colorLight, colorBold, fontSize, custom) {
 
 	custom(this);
 }
-
-/*
-Polygon.prototype.setSize = function() {
-	this.unitWidth = coordinateWidth / 24;
-	this.unitHeight = coordinateHeight / 10;
-}
-*/

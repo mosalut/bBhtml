@@ -11,7 +11,8 @@ var account = sessionStorage.getItem("Bb_account");
 var xmlhttpInit
 var xmlhttpCirulations; 
 var xmlhttpWorthdeposits; 
-var xmlhttpDrawns; 
+var xmlhttpFilDrawns; 
+var xmlhttpCfilDrawns; 
 var sse;
 
 function checkSignIn(e) {
@@ -32,9 +33,13 @@ function checkSignIn(e) {
 			xmlhttpWorthdeposits.send();
 			xmlhttpWorthdeposits.onreadystatechange = getWorthDeposits;
 
-			xmlhttpDrawns.open("GET", networking + "drawns?account=" + account + "&key=" + key);
-			xmlhttpDrawns.send();
-			xmlhttpDrawns.onreadystatechange = getDrawns;
+			xmlhttpFilDrawns.open("GET", networking + "fildrawns?account=" + account + "&key=" + key);
+			xmlhttpFilDrawns.send();
+			xmlhttpFilDrawns.onreadystatechange = getFilDrawns;
+
+			xmlhttpCfilDrawns.open("GET", networking + "cfildrawns?account=" + account + "&key=" + key);
+			xmlhttpCfilDrawns.send();
+			xmlhttpCfilDrawns.onreadystatechange = getCfilDrawns;
 
 			sseProcess();
 		}
@@ -135,14 +140,14 @@ function initData(e) {
 function getCirulations(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0]);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0], 1);
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
@@ -152,21 +157,38 @@ function getCirulations(e) {
 function getWorthDeposits(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1]);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1], 1);
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 	}
 }
 
-function getDrawns(e) {
+function getFilDrawns(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+	//	console.log(response);
+
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
+		}
+
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2], 1);
+		polygen.p = {clear: false, cirulations: response.data}; 
+		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+	}
+}
+
+function getCfilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
@@ -176,7 +198,7 @@ function getDrawns(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2]);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[3], 12);
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
@@ -236,13 +258,15 @@ function main() {
 		xmlhttpInit = new XMLHttpRequest();
 		xmlhttpCirulations = new XMLHttpRequest();
 		xmlhttpWorthdeposits = new XMLHttpRequest();
-		xmlhttpDrawns = new XMLHttpRequest();
+		xmlhttpFilDrawns = new XMLHttpRequest();
+		xmlhttpCfilDrawns = new XMLHttpRequest();
 	} else {
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpInit = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpCirulations = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpWorthdeposits = new ActiveXObject("Microsoft.XMLHTTP");
-		xmlhttpDrawns = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpFilDrawns = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpCfilDrawns = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 
 	xmlhttp.open("POST", networking + "checksignin");

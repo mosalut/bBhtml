@@ -35,7 +35,8 @@ function drawCirulations(polygon) {
 	for(let i = 0; i < polygon.p.cirulations.length - 1; i++) {
 		polygon.object.ctx.beginPath();
 		polygon.object.ctx.moveTo(width, height);
-		width += polygon.unitWidth;
+		console.log(polygon.periodUnitWidth);
+		width += polygon.periodUnitWidth;
 		height = polygon.startY - (polygon.coordinateHeight - polygon.unitHeight) / max * polygon.p.cirulations[i + 1];
 	//	console.log(height, max, polygon.p.cirulations[i + 1]);
 		polygon.object.ctx.lineTo(width, height);
@@ -56,12 +57,12 @@ function drawCirulations(polygon) {
 	//	let imgData = polygon.object.ctx.createImageData(canvas
 	//	let clear = false;
 		for(let i = 0; i < polygon.moveData.length; i++) {
-			if(Math.abs(x - polygon.moveData[i].width) <= 4 && Math.abs(y - polygon.moveData[i].height) <= 4) { 
+			if(Math.abs(x - polygon.moveData[i].width) <= 4) {
 				polygon.object.ctx.putImageData(imgData, 0, 0);
 				polygon.object.ctx.fillText(polygon.moveData[i].data, polygon.moveData[i].width, polygon.moveData[i].height - 4);
 				polygon.object.ctx.beginPath();
-				polygon.object.ctx.moveTo(polygon.startX + i * polygon.unitWidth, polygon.startY);
-				polygon.object.ctx.lineTo(polygon.startX + i * polygon.unitWidth, polygon.startY - polygon.coordinateHeight);
+				polygon.object.ctx.moveTo(polygon.startX + i * polygon.periodUnitWidth, polygon.startY);
+				polygon.object.ctx.lineTo(polygon.startX + i * polygon.periodUnitWidth, polygon.startY - polygon.coordinateHeight);
 				polygon.object.ctx.stroke();
 				continue;
 			}
