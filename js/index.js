@@ -3,11 +3,12 @@
 const COLORLIGHT = "#eeeeee";
 const COLORBOLD = "#ffffff";
 const FONTSIZE = "12px";
+const filNodeColumns = {"balance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
 
-var xmlhttp;
+var xmlhttpInit
 var xmlhttpCirulations; 
 var xmlhttpWorthdeposits; 
 var xmlhttpDrawns; 
@@ -19,6 +20,10 @@ function checkSignIn(e) {
 		console.log(response);
 
 		if(successed(response)) {
+			xmlhttpInit.open("GET", networking + "?account=" + account + "&key=" + key);
+			xmlhttpInit.send();
+			xmlhttpInit.onreadystatechange = initData;
+
 			xmlhttpCirulations.open("GET", networking + "cirulations?account=" + account + "&key=" + key);
 			xmlhttpCirulations.send();
 			xmlhttpCirulations.onreadystatechange = getCirulations;
@@ -47,6 +52,84 @@ function successed(response) {
 	}
 
 	return true;
+}
+
+function initData(e) {
+	if (e.target.readyState == 4 && e.target.status == 200) {
+		let response = JSON.parse(e.target.responseText);
+		console.log(response);
+
+		if(!successed(response)) {
+			console.log(response.message);
+			return;
+		}
+
+		{
+			let dom = document.getElementById("apy_rate");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(parseFloat(response.data.apyrate));
+		}
+
+		{
+			let dom = document.getElementById("cfil_to_fil");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data.cfiltofil));
+		}
+
+		{
+			let dom = document.getElementById("lowcase_b");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(parseFloat(response.data.lowcaseb));
+		}
+
+		{
+			let dom = document.getElementById("capital_b");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(parseFloat(response.data.capitalb));
+		}
+
+		syncOver();
+
+		{
+			let dom = document.getElementById("loss");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(parseFloat(response.data.loss));
+		}
+
+		{
+			let dom = document.getElementById("drawn_fil");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(parseFloat(response.data.drawnfil));
+		}
+
+		{
+			let dom = document.querySelector("#lockedFilNode>ul");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+
+			renderFilNode(dom, response.data.filNodes);
+		}
+	}
 }
 
 function getCirulations(e) {
@@ -147,13 +230,16 @@ function main() {
 		loading(dataContainers[i]);
 	}
 
+	let xmlhttp;
 	if (window.XMLHttpRequest) {
 		xmlhttp = new XMLHttpRequest();
+		xmlhttpInit = new XMLHttpRequest();
 		xmlhttpCirulations = new XMLHttpRequest();
 		xmlhttpWorthdeposits = new XMLHttpRequest();
 		xmlhttpDrawns = new XMLHttpRequest();
 	} else {
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpInit = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpCirulations = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpWorthdeposits = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpDrawns = new ActiveXObject("Microsoft.XMLHTTP");
@@ -165,15 +251,17 @@ function main() {
 	xmlhttp.onreadystatechange = checkSignIn;
 }
 
-function syncOver(sync) {
-	if(sync == 0) {
-		let lowcaseb = parseFloat(document.getElementById("lowcase_b").innerText); 
-		let capitalb = parseFloat(document.getElementById("capital_b").innerText); 
-		console.log("lowcaseb:", lowcaseb);
-		console.log("capitalb:", capitalb);
-		document.getElementById("total_put_in").innerText = lowcaseb + capitalb; // 最新总资产
-		document.getElementById("lrr").innerText = (lowcaseb / (lowcaseb + capitalb) * 100).toFixed(4) + "%"; // 准备金率
+function syncOver() {
+	let lowcaseb = parseFloat(document.getElementById("lowcase_b").innerText); 
+	let capitalb = parseFloat(document.getElementById("capital_b").innerText); 
+	document.getElementById("total_put_in").innerText = lowcaseb + capitalb; // 最新总资产
+
+	let lrr = (lowcaseb / (lowcaseb + capitalb) * 100)
+	if(isNaN(lrr)) {
+		document.getElementById("lrr").innerText = 0 + "%";
+		return
 	}
+	dom.innerText = lrr.toFixed(4) + "%"; // 准备金率
 }
 
 function sseProcess() {
@@ -192,8 +280,6 @@ function sseProcess() {
 	//	console.log("onmessage", e);
 	}
 
-	let sync = 2;
-	
 	// APY%
 	sse.addEventListener("apyrate", function(e) {
 		let response = JSON.parse(e.data);
@@ -204,8 +290,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-
-		document.getElementById("apy_rate").innerText = floatNumberProcess(parseFloat(response.data));
+		dom.innerText = floatNumberProcess(parseFloat(response.data));
 	})
 	
 	// CFIL:FIL
@@ -218,89 +303,74 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-
 		dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data));
 	})
 	
-	// 可流通量b
-	sse.addEventListener("lowcaseb", function(e) {
+	// 可流通量b 锁仓量B
+	sse.addEventListener("bb", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
-		let dom = document.getElementById("lowcase_b");
+		let domLowcase = document.getElementById("lowcase_b");
+		let domCapital = document.getElementById("capital_b");
+
 		if(!response.success) {
 			dom.innerText = response.message;
-			sync--
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(parseFloat(response.data));
-		sync--
+		console.log(response.data.lowcaseb, response.data.capitalb);
+		domLowcase.innerText = floatNumberProcess(parseFloat(response.data.lowcaseb));
+		domCapital.innerText = floatNumberProcess(parseFloat(response.data.capitalb));
 
-		syncOver(sync);
-	})
-
-	// 锁仓量B
-	sse.addEventListener("capitalb", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-
-		let dom = document.getElementById("capital_b");
-		if(!response.success) {
-			dom.innerText = response.message;
-			sync--
-			return;
-		}
-
-		dom.innerText = floatNumberProcess(parseFloat(response.data));
-		sync--
-
-		syncOver(sync);
+		syncOver();
 	})
 
 	// 损耗值
 	sse.addEventListener("loss", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		let dom = document.getElementById("loss");
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
-
 		dom.innerText = floatNumberProcess(parseFloat(response.data));
 	})
 
 	// 已提取CFIL
 	sse.addEventListener("drawnfil", function(e) {
 		let response = JSON.parse(e.data);
-		console.log(response);
+	//	console.log(response);
 
 		let dom = document.getElementById("drawn_fil");
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
-
 		dom.innerText = floatNumberProcess(parseFloat(response.data));
 	})
-
-	/*
-	// 已提取CFIL
-	sse.addEventListener("drawncfil", function(e) {
+	
+	// B锁仓量投资FIL节点
+	sse.addEventListener("filNodes", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
-		let dom = document.getElementById("drawn_cfil");
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
 
-		dom.innerText = floatNumberProcess(response.data);
+		let dom = document.querySelector("#lockedFilNode>ul");
+		while(dom.firstChild) {
+			dom.removeChild(dom.firstChild);
+		}
+
+		renderFilNode(dom, response.data);
 	})
 
+	/*
 	// 已奖励Faci
 	sse.addEventListener("rewardedfaci", function(e) {
 		let response = JSON.parse(e.data);
@@ -329,6 +399,37 @@ function sseProcess() {
 		dom.innerText = floatNumberProcess(response.data);
 	})
 	*/
+}
+
+function renderFilNode(dom, data) {
+	for(let key in data) {
+		let li = document.createElement("li");
+		let details = document.createElement("details");
+		let summary = document.createElement("summary");
+		summary.innerText = key;
+		details.setAttribute("open", true);
+		details.append(summary);
+		let aside = document.createElement("aside");
+		for(let k in data[key]) {
+			let div = document.createElement("div");
+			let h6 = document.createElement("h6");
+			h6.innerText = filNodeColumns[k];
+			let divInner = document.createElement("div");
+			let value = data[key][k];
+			if(k != "singlet") {
+				value = parseFloat(value) / 1000000000000000000;
+			}
+			value = floatNumberProcess(value);
+			divInner.innerText = value;
+			div.append(h6);
+			div.append(divInner);
+			aside.append(div);
+		}
+
+		details.append(aside);
+		li.append(details);
+		dom.append(li);
+	}
 }
 
 window.onload = main;

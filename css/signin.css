@@ -14,8 +14,9 @@
 	background-color: #edddf0;
 }
 
-#sign_in input[type="submit"], #sign_in input[type="reset"] {
+#sign_in input[type="submit"] {
 	width: 300px;
-	color: #793251;
-	background-color: #edddf0;
+	color: #175c27;
+	font-weight: bold;
+	background-color: #6ce988;
 }
