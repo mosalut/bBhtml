@@ -9,9 +9,21 @@
 	padding-left: 5px;
 	border: none;
 	border-radius: 5px;
-	width: 290px;
 	height: 32px;
 	background-color: #edddf0;
+}
+#sign_in input[name="account"] {
+	width: 290px;
+}
+
+#sign_in input[name="code"] {
+	width: 200px;
+}
+
+#sign_in input[type="button"] {
+	margin-left: 10px;
+	width: 80px;
+	background-color: #8c64a0;
 }
 
 #sign_in input[type="submit"] {

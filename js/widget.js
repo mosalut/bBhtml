@@ -52,12 +52,13 @@ Canvas.prototype.zoomControl = function(father, colorLight, colorBold, fontSize,
 	}
 }
 
-var Polygon = function(dom, peroid) {
+var Polygon = function(dom, peroid, point) {
 	this.p = {};
 	this.object = new Canvas(dom);
 	this.moveData = [];
 	this.peroid = peroid;
 	this.resize(dom);
+	this.point = point;
 }
 
 Polygon.prototype.resize = function(dom) {

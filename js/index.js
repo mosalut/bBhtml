@@ -147,7 +147,7 @@ function getCirulations(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0], 1);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
@@ -164,7 +164,7 @@ function getWorthDeposits(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1], 1);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
@@ -181,7 +181,7 @@ function getFilDrawns(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2], 1);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
@@ -198,7 +198,7 @@ function getCfilDrawns(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[3], 12);
+		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
 		polygen.p = {clear: false, cirulations: response.data}; 
 		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
 		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
