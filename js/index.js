@@ -3,7 +3,7 @@
 const COLORLIGHT = "#eeeeee";
 const COLORBOLD = "#ffffff";
 const FONTSIZE = "12px";
-const filNodeColumns = {"balance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
+const filNodeColumns = {"address":"所有者", "qualityadjpower":"有效算力", "balance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
@@ -440,10 +440,19 @@ function renderFilNode(dom, data) {
 			h6.innerText = filNodeColumns[k];
 			let divInner = document.createElement("div");
 			let value = data[key][k];
-			if(k != "singlet") {
-				value = parseFloat(value) / 1000000000000000000;
+			switch(k) {
+				case "address":
+					value = value.slice(0, 8) + "......" + value.slice(value.length - 9, value.length - 1);
+					break;
+				case "singlet":
+					value = floatNumberProcess(value) + "FIL/T";
+					break;
+				case "qualityadjpower":
+					value = floatNumberProcess(value) + "BiP";
+					break;
+				default:
+					value = floatNumberProcess(parseFloat(value) / 1000000000000000000) + "FIL";
 			}
-			value = floatNumberProcess(value);
 			divInner.innerText = value;
 			div.append(h6);
 			div.append(divInner);
