@@ -27,8 +27,8 @@ window.onload = function() {
 						codeB.value = seconds--;
 						if(seconds == 0) {
 							codeB.value = "get code";
+							codeB.removeAttribute("disabled");
 							window.clearInterval(t);
-							codeB.setAttribute("disabled", false);
 							return;
 						}
 					}, 1000);
