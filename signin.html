@@ -6,6 +6,8 @@
 		<link rel="shortcut icon" href="img/favicon.ico" />
 		<link type="text/css" rel="stylesheet" href="css/style.css" />
 		<link type="text/css" rel="stylesheet" href="css/signin.css" />
+		<script type="text/javascript" src="js/global.js"></script>
+		<script type="text/javascript" src="js/signin.js"></script>
 		<title>Faci&nbsp;operation&nbsp;system</title>
 	</head>
 	<body>
@@ -19,10 +21,10 @@
 				<!--form method="post" action="http://47.98.204.151:8888/signin"-->
 				<form method="post" action="http://47.98.204.151:8887/signin">
 					<div>
-						<input type="text" name="account" placeholder="account" />
+						<input type="text" name="account" placeholder="input account" />
 					</div>
 					<div>
-						<input type="password" name="password" placeholder="password" />
+						<input type="text" name="code" placeholder="input code" /><input id="codeB" type="button" value="get code" />
 					</div>
 					<div>
 						<input type="submit" value="Sign in" />
