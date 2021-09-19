@@ -21,12 +21,14 @@ window.onload = function() {
 				console.log(response);
 
 				if(response.success) {
+					codeB.setAttribute("disabled", true);
 					let seconds = 60;
 					let t = window.setInterval(function() {
 						codeB.value = seconds--;
 						if(seconds == 0) {
 							codeB.value = "get code";
 							window.clearInterval(t);
+							codeB.setAttribute("disabled", false);
 							return;
 						}
 					}, 1000);
