@@ -20,6 +20,7 @@ function checkSignIn(e) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
+		// api request
 		if(successed(response)) {
 			xmlhttpInit.open("GET", networking + "?account=" + account + "&key=" + key);
 			xmlhttpInit.send();
@@ -59,6 +60,7 @@ function successed(response) {
 	return true;
 }
 
+// api response
 function initData(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -131,6 +133,7 @@ function initData(e) {
 	}
 }
 
+// api response
 function getCirulations(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -148,6 +151,7 @@ function getCirulations(e) {
 	}
 }
 
+// api response
 function getWorthDeposits(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -165,6 +169,7 @@ function getWorthDeposits(e) {
 	}
 }
 
+// api response
 function getFilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -182,6 +187,7 @@ function getFilDrawns(e) {
 	}
 }
 
+// api response
 function getCfilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -283,6 +289,7 @@ function syncOver() {
 	dom.innerText = lrr.toFixed(4) + "%"; // 准备金率
 }
 
+// sse response
 function sseProcess() {
 	sse =  new EventSource(networking + "sse");
 	console.log(sse);
