@@ -9,8 +9,12 @@ var Canvas = function(dom) {
 }
 
 Canvas.prototype.backup = function() {
+	/*
 	this.backupWidth = this.dom.parentNode.clientWidth;
 	this.backupHeight = this.dom.parentNode.clientHeight;
+	*/
+	this.backupWidth = 480;
+	this.backupHeight = 224;
 	this.backupStyle = this.dom.parentNode.style;
 }
 
@@ -72,6 +76,10 @@ Polygon.prototype.resize = function(dom) {
 }
 
 Polygon.prototype.draw = function(colorLight, colorBold, fontSize, custom) {
+	if(this.p.clear) {
+		this.object.ctx.clearRect(0, 0, this.object.dom.width, this.object.dom.height);
+	}
+
 	this.object.ctx.strokeStyle = colorLight;
 	this.object.ctx.font = fontSize;
 	this.object.ctx.fillStyle = colorBold;
