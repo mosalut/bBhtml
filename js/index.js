@@ -15,11 +15,17 @@ var xmlhttpFilDrawns;
 var xmlhttpCfilDrawns; 
 var sse;
 
+var cirulationCurve;
+var worthDepositCurve;
+var filDrawnsCurve;
+var cfilDrawnsCurve;
+
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
 		console.log(response);
 
+		// api request
 		if(successed(response)) {
 			xmlhttpInit.open("GET", networking + "?account=" + account + "&key=" + key);
 			xmlhttpInit.send();
@@ -59,6 +65,7 @@ function successed(response) {
 	return true;
 }
 
+// api response
 function initData(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -131,6 +138,7 @@ function initData(e) {
 	}
 }
 
+// api response
 function getCirulations(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -141,13 +149,15 @@ function getCirulations(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
-		polygen.p = {clear: false, cirulations: response.data}; 
-		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		cirulationCurve = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
+		cirulationCurve.p = {clear: false, cirulations: response.data}; 
+		cirulationCurve.object.zoomControl(cirulationCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cirulationCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
+
 }
 
+// api response
 function getWorthDeposits(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -158,13 +168,14 @@ function getWorthDeposits(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
-		polygen.p = {clear: false, cirulations: response.data}; 
-		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		worthDepositCurve = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
+		worthDepositCurve.p = {clear: false, cirulations: response.data}; 
+		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
 }
 
+// api response
 function getFilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -175,13 +186,14 @@ function getFilDrawns(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
-		polygen.p = {clear: false, cirulations: response.data}; 
-		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		filDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
+		filDrawnsCurve.p = {clear: false, cirulations: response.data}; 
+		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
 }
 
+// api response
 function getCfilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
@@ -192,10 +204,10 @@ function getCfilDrawns(e) {
 			return;
 		}
 
-		let polygen = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
-		polygen.p = {clear: false, cirulations: response.data}; 
-		polygen.object.zoomControl(polygen, COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
-		polygen.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawCirulations);
+		cfilDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
+		cfilDrawnsCurve.p = {clear: false, cirulations: response.data}; 
+		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
 }
 
@@ -283,6 +295,7 @@ function syncOver() {
 	dom.innerText = lrr.toFixed(4) + "%"; // 准备金率
 }
 
+// sse response
 function sseProcess() {
 	sse =  new EventSource(networking + "sse");
 	console.log(sse);
@@ -337,7 +350,6 @@ function sseProcess() {
 			return;
 		}
 
-		console.log(response.data);
 		domLowcase.innerText = floatNumberProcess(parseFloat(response.data));
 
 		syncOver();
@@ -385,6 +397,55 @@ function sseProcess() {
 		}
 
 		let totalBalance = renderFilNode(dom, response.data);
+	})
+
+	sse.addEventListener("cirulations", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+		
+		cirulationCurve.object.ctx.clearRect(0, 0, cirulationCurve.object.dom.width, cirulationCurve.object.dom.height);
+		cirulationCurve.p = {clear: true, cirulations: response.data}; 
+		cirulationCurve.object.zoomControl(cirulationCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cirulationCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+	})
+
+	sse.addEventListener("worthdeposits", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+		
+		worthDepositCurve.p = {clear: true, cirulations: response.data}; 
+		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+	})
+
+	sse.addEventListener("fildrawns", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+		
+		filDrawnsCurve.p = {clear: true, cirulations: response.data}; 
+		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+	})
+
+	sse.addEventListener("cfildrawns", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+		
+		cfilDrawnsCurve.p = {clear: true, cirulations: response.data}; 
+		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+	})
+
+	// keep alive
+	sse.addEventListener("pong", function(e) {
+		let response = JSON.parse(e.data);
+
+		if(!response.success) {
+			console.log("ping failed");
+			return;
+		}
+
+		console.log("pong");
 	})
 }
 
