@@ -3,7 +3,7 @@
 const COLORLIGHT = "#eeeeee";
 const COLORBOLD = "#ffffff";
 const FONTSIZE = "12px";
-const filNodeColumns = {"address":"所有者", "qualityadjpower":"有效算力", "balance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
+const filNodeColumns = {"address":"所有者", "balance":"账户总余额", "qualityadjpower":"有效算力", "availableBalance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
@@ -97,17 +97,6 @@ function initData(e) {
 		}
 
 		{
-			let dom = document.getElementById("capital_b");
-			if(!response.success) {
-				dom.innerText = response.message;
-				return;
-			}
-			dom.innerText = floatNumberProcess(parseFloat(response.data.capitalb));
-		}
-
-		syncOver();
-
-		{
 			let dom = document.getElementById("loss");
 			if(!response.success) {
 				dom.innerText = response.message;
@@ -132,8 +121,13 @@ function initData(e) {
 				return;
 			}
 
-			renderFilNode(dom, response.data.filNodes);
+			let totalBalance = renderFilNode(dom, response.data.filNodes);
+
+			let domb = document.getElementById("capital_b");
+			domb.innerText = totalBalance;
 		}
+
+		syncOver();
 	}
 }
 
@@ -281,8 +275,9 @@ function syncOver() {
 	document.getElementById("total_put_in").innerText = lowcaseb + capitalb; // 最新总资产
 
 	let lrr = (lowcaseb / (lowcaseb + capitalb) * 100)
+	let dom = document.getElementById("lrr");
 	if(isNaN(lrr)) {
-		document.getElementById("lrr").innerText = 0 + "%";
+		dom.innerText = 0 + "%";
 		return
 	}
 	dom.innerText = lrr.toFixed(4) + "%"; // 准备金率
@@ -330,22 +325,20 @@ function sseProcess() {
 		dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data));
 	})
 	
-	// 可流通量b 锁仓量B
-	sse.addEventListener("bb", function(e) {
+	// 可流通量b
+	sse.addEventListener("lowcaseb", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
 		let domLowcase = document.getElementById("lowcase_b");
-		let domCapital = document.getElementById("capital_b");
 
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
 
-		console.log(response.data.lowcaseb, response.data.capitalb);
-		domLowcase.innerText = floatNumberProcess(parseFloat(response.data.lowcaseb));
-		domCapital.innerText = floatNumberProcess(parseFloat(response.data.capitalb));
+		console.log(response.data);
+		domLowcase.innerText = floatNumberProcess(parseFloat(response.data));
 
 		syncOver();
 	})
@@ -391,41 +384,12 @@ function sseProcess() {
 			dom.removeChild(dom.firstChild);
 		}
 
-		renderFilNode(dom, response.data);
+		let totalBalance = renderFilNode(dom, response.data);
 	})
-
-	/*
-	// 已奖励Faci
-	sse.addEventListener("rewardedfaci", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-
-		let dom = document.getElementById("rewarded_faci");
-		if(!response.success) {
-			dom.innerText = response.message;
-			return;
-		}
-
-		dom.innerText = floatNumberProcess(response.data);
-	})
-
-	// Faci总发行量
-	sse.addEventListener("facitotal", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-
-		let dom = document.getElementById("faci_total");
-		if(!response.success) {
-			dom.innerText = response.message;
-			return;
-		}
-
-		dom.innerText = floatNumberProcess(response.data);
-	})
-	*/
 }
 
 function renderFilNode(dom, data) {
+	let totalBalance = 0;
 	for(let key in data) {
 		let li = document.createElement("li");
 		let details = document.createElement("details");
@@ -439,19 +403,23 @@ function renderFilNode(dom, data) {
 			let h6 = document.createElement("h6");
 			h6.innerText = filNodeColumns[k];
 			let divInner = document.createElement("div");
-			let value = data[key][k];
+			let v = data[key][k];
+			let value;
 			switch(k) {
 				case "address":
-					value = value.slice(0, 8) + "......" + value.slice(value.length - 9, value.length - 1);
+					value = v.slice(0, 8) + "......" + v.slice(v.length - 9, v.length - 1);
 					break;
 				case "singlet":
-					value = floatNumberProcess(value) + "FIL/T";
+					value = floatNumberProcess(v) + "FIL/T";
 					break;
 				case "qualityadjpower":
-					value = floatNumberProcess(value) + "BiP";
+					value = floatNumberProcess(v) + "BiP";
 					break;
+				case "balance":
+					value = floatNumberProcess(parseFloat(v) / 1000000000000000000) + "FIL";
+					totalBalance += parseFloat(v);
 				default:
-					value = floatNumberProcess(parseFloat(value) / 1000000000000000000) + "FIL";
+					value = floatNumberProcess(parseFloat(v) / 1000000000000000000) + "FIL";
 			}
 			divInner.innerText = value;
 			div.append(h6);
@@ -463,6 +431,8 @@ function renderFilNode(dom, data) {
 		li.append(details);
 		dom.append(li);
 	}
+
+	return floatNumberProcess(totalBalance / 1000000000000000000);
 }
 
 window.onload = main;
