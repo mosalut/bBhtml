@@ -3,7 +3,7 @@
 const COLORLIGHT = "#eeeeee";
 const COLORBOLD = "#ffffff";
 const FONTSIZE = "12px";
-const filNodeColumns = {"address":"所有者", "balance":"账户总余额", "qualityadjpower":"有效算力", "availableBalance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
+const filNodeColumns = {"address":"所有者", "balance":"账户总余额", "qualityadjpower":"有效算力", "availableBalance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T", "workerbalance": "矿工余额"};
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
@@ -128,8 +128,7 @@ function initData(e) {
 				return;
 			}
 
-			let totalBalance = renderFilNode(dom, response.data.filNodes);
-
+			let totalBalance = renderFilNodes(dom, response.data.filNodes);
 			let domb = document.getElementById("capital_b");
 			domb.innerText = totalBalance;
 		}
@@ -396,7 +395,7 @@ function sseProcess() {
 			dom.removeChild(dom.firstChild);
 		}
 
-		let totalBalance = renderFilNode(dom, response.data);
+		let totalBalance = renderFilNodes(dom, response.data);
 	})
 
 	sse.addEventListener("cirulations", function(e) {
@@ -449,7 +448,7 @@ function sseProcess() {
 	})
 }
 
-function renderFilNode(dom, data) {
+function renderFilNodes(dom, data) {
 	let totalBalance = 0;
 	for(let key in data) {
 		let li = document.createElement("li");
@@ -461,6 +460,7 @@ function renderFilNode(dom, data) {
 		let aside = document.createElement("aside");
 		for(let k in data[key]) {
 			let div = document.createElement("div");
+			div.setAttribute("class", "filNodeValue");
 			let h6 = document.createElement("h6");
 			h6.innerText = filNodeColumns[k];
 			let divInner = document.createElement("div");
@@ -471,16 +471,19 @@ function renderFilNode(dom, data) {
 					value = v.slice(0, 8) + "......" + v.slice(v.length - 9, v.length - 1);
 					break;
 				case "singlet":
-					value = floatNumberProcess(v) + "FIL/T";
+					value = floatNumberProcess(v) + " FIL/T";
 					break;
 				case "qualityadjpower":
-					value = floatNumberProcess(v) + "BiP";
+					value = floatNumberProcess(v) + " BiP";
 					break;
 				case "balance":
-					value = floatNumberProcess(parseFloat(v) / 1000000000000000000) + "FIL";
+					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
+					totalBalance += parseFloat(v);
+				case "workerbalance":
+					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
 					totalBalance += parseFloat(v);
 				default:
-					value = floatNumberProcess(parseFloat(v) / 1000000000000000000) + "FIL";
+					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
 			}
 			divInner.innerText = value;
 			div.append(h6);
