@@ -3,7 +3,7 @@
 const COLORLIGHT = "#eeeeee";
 const COLORBOLD = "#ffffff";
 const FONTSIZE = "12px";
-const filNodeColumns = {"address":"所有者", "balance":"账户总余额", "qualityadjpower":"有效算力", "availableBalance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T", "workerbalance": "矿工余额"};
+const filNodeColumns = {"address":"所有者", "workerbalance": "worker余额", "balance":"账户总余额", "qualityadjpower":"有效算力", "availableBalance": "可用余额", "pledge": "扇区抵押", "vestingFunds": "存储服务锁仓", "singlet": "单T"};
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
@@ -450,6 +450,7 @@ function sseProcess() {
 
 function renderFilNodes(dom, data) {
 	let totalBalance = 0;
+	console.log(data, "xxxxxxxxxxxxx");
 	for(let key in data) {
 		let li = document.createElement("li");
 		let details = document.createElement("details");
@@ -468,7 +469,10 @@ function renderFilNodes(dom, data) {
 			let value;
 			switch(k) {
 				case "address":
-					value = v.slice(0, 8) + "......" + v.slice(v.length - 9, v.length - 1);
+					if(v.length > 16) {
+						value = v.slice(0, 8) + "......" + v.slice(v.length - 9, v.length - 1);
+					}
+					value = v;
 					break;
 				case "singlet":
 					value = floatNumberProcess(v) + " FIL/T";

@@ -27,7 +27,7 @@ li>details>aside {
 	flex-wrap: wrap;
 }
 
-.filNodeValue:nth-child(2)>div, .filNodeValue:nth-child(7)>div {
+.filNodeValue:nth-child(2)>div, .filNodeValue:nth-child(8)>div {
 	color: #5a043c;
 	font-weight: bold;
 }
