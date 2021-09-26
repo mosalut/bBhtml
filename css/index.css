@@ -32,6 +32,15 @@ li>details>aside {
 	font-weight: bold;
 }
 
+.filNodeValue>div {
+	width: 180px;
+}
+.filNodeValue>.address {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 #curve {
 	margin: 0px auto;
 	display: -webkit-flex;

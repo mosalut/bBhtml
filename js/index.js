@@ -23,7 +23,7 @@ var cfilDrawnsCurve;
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		// api request
 		if(successed(response)) {
@@ -69,7 +69,7 @@ function successed(response) {
 function initData(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
@@ -196,7 +196,7 @@ function getFilDrawns(e) {
 function getCfilDrawns(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
@@ -213,7 +213,7 @@ function getCfilDrawns(e) {
 function responseSignout(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
@@ -297,7 +297,7 @@ function syncOver() {
 // sse response
 function sseProcess() {
 	sse =  new EventSource(networking + "sse");
-	console.log(sse);
+//	console.log(sse);
 
 	sse.onopen = function(e) {
 		console.log("onopen", e);
@@ -305,6 +305,7 @@ function sseProcess() {
 
 	sse.onerror = function(e) {
 		console.log("onerror", e);
+		sse.close()
 	}
 
 	sse.onmessage = function(e) {
@@ -450,7 +451,6 @@ function sseProcess() {
 
 function renderFilNodes(dom, data) {
 	let totalBalance = 0;
-	console.log(data, "xxxxxxxxxxxxx");
 	for(let key in data) {
 		let li = document.createElement("li");
 		let details = document.createElement("details");
@@ -461,7 +461,7 @@ function renderFilNodes(dom, data) {
 		let aside = document.createElement("aside");
 		for(let k in data[key]) {
 			let div = document.createElement("div");
-			div.setAttribute("class", "filNodeValue");
+			div.classList.add("filNodeValue");
 			let h6 = document.createElement("h6");
 			h6.innerText = filNodeColumns[k];
 			let divInner = document.createElement("div");
@@ -469,10 +469,9 @@ function renderFilNodes(dom, data) {
 			let value;
 			switch(k) {
 				case "address":
-					if(v.length > 16) {
-						value = v.slice(0, 8) + "......" + v.slice(v.length - 9, v.length - 1);
-					}
+					div.title = v;
 					value = v;
+					divInner.classList.add("address");
 					break;
 				case "singlet":
 					value = floatNumberProcess(v) + " FIL/T";
@@ -481,11 +480,13 @@ function renderFilNodes(dom, data) {
 					value = floatNumberProcess(v) + " BiP";
 					break;
 				case "balance":
-					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
+					value = floatNumberProcess(v) + " FIL";
 					totalBalance += parseFloat(v);
+					break;
 				case "workerbalance":
-					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
+					value = floatNumberProcess(v) + " FIL";
 					totalBalance += parseFloat(v);
+					break;
 				default:
 					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
 			}
@@ -498,9 +499,11 @@ function renderFilNodes(dom, data) {
 		details.append(aside);
 		li.append(details);
 		dom.append(li);
+		let hr = document.createElement("hr");
+		dom.append(hr);
 	}
 
-	return floatNumberProcess(totalBalance / 1000000000000000000);
+	return floatNumberProcess(totalBalance);
 }
 
 window.onload = main;
