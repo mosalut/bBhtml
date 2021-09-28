@@ -82,7 +82,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = floatNumberProcess(parseFloat(response.data.apyrate));
+			dom.innerText = response.data.apyrate.toFixed(2) + "%";
 		}
 
 		{
@@ -91,7 +91,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data.cfiltofil));
+			dom.innerText = "1:" + response.data.cfiltofil.toFixed(2);
 		}
 
 		{
@@ -100,7 +100,16 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = floatNumberProcess(parseFloat(response.data.lowcaseb));
+			dom.innerText = response.data.lowcaseb.toFixed(4);
+		}
+
+		{
+			let dom = document.getElementById("capital_b");
+			if(!response.success) {
+				dom.innerText = response.message;
+				return;
+			}
+			dom.innerText = floatNumberProcess(response.data.capitalb);
 		}
 
 		{
@@ -109,7 +118,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = floatNumberProcess(parseFloat(response.data.loss));
+			dom.innerText = response.data.loss.toFixed(2) + "%";
 		}
 
 		{
@@ -118,7 +127,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = floatNumberProcess(parseFloat(response.data.drawnfil));
+			dom.innerText = response.data.drawnfil.toFixed(4);
 		}
 
 		{
@@ -128,9 +137,11 @@ function initData(e) {
 				return;
 			}
 
+			/*
 			let totalBalance = renderFilNodes(dom, response.data.filNodes);
 			let domb = document.getElementById("capital_b");
 			domb.innerText = totalBalance;
+			*/
 		}
 
 		syncOver();
@@ -291,7 +302,7 @@ function syncOver() {
 		dom.innerText = 0 + "%";
 		return
 	}
-	dom.innerText = lrr.toFixed(4) + "%"; // 准备金率
+	dom.innerText = lrr.toFixed(2) + "%"; // 准备金率
 }
 
 // sse response
@@ -322,7 +333,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = floatNumberProcess(parseFloat(response.data));
+		dom.innerText = response.data.toFixed(2) + "%";
 	})
 	
 	// CFIL:FIL
@@ -335,7 +346,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = "1:" + floatNumberProcess(parseFloat(response.data));
+		dom.innerText = "1:" + response.data.toFixed(2);
 	})
 	
 	// 可流通量b
@@ -350,7 +361,7 @@ function sseProcess() {
 			return;
 		}
 
-		domLowcase.innerText = floatNumberProcess(parseFloat(response.data));
+		domLowcase.innerText = response.data.toFixed(4);
 
 		syncOver();
 	})
@@ -365,7 +376,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = floatNumberProcess(parseFloat(response.data));
+		dom.innerText = response.data.toFixed(4) + "%";
 	})
 
 	// 已提取CFIL
@@ -378,7 +389,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = floatNumberProcess(parseFloat(response.data));
+		dom.innerText = response.data.toFixed(4);
 	})
 	
 	// B锁仓量投资FIL节点
@@ -474,21 +485,13 @@ function renderFilNodes(dom, data) {
 					divInner.classList.add("address");
 					break;
 				case "singlet":
-					value = floatNumberProcess(v) + " FIL/T";
+					value = v.toFixed(4) + " FIL/T";
 					break;
 				case "qualityadjpower":
-					value = floatNumberProcess(v) + " BiP";
-					break;
-				case "balance":
-					value = floatNumberProcess(v) + " FIL";
-					totalBalance += parseFloat(v);
-					break;
-				case "workerbalance":
-					value = floatNumberProcess(v) + " FIL";
-					totalBalance += parseFloat(v);
+					value = v.toFixed(4) + " BiP";
 					break;
 				default:
-					value = floatNumberProcess(parseFloat(v) / 1e18) + " FIL";
+					value = v.toFixed(4) + " FIL";
 			}
 			divInner.innerText = value;
 			div.append(h6);
@@ -502,8 +505,6 @@ function renderFilNodes(dom, data) {
 		let hr = document.createElement("hr");
 		dom.append(hr);
 	}
-
-	return floatNumberProcess(totalBalance);
 }
 
 window.onload = main;

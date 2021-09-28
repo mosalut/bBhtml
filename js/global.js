@@ -3,7 +3,8 @@
 var networking = "http://47.98.204.151:8887/"
 
 function floatNumberProcess(number) {
-	return number.toFixed(4) + "";
+	number /= 1e18;
+	return number.toFixed(4);
 }
 
 function loading(dom) {
