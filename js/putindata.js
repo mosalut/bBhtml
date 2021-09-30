@@ -1,15 +1,31 @@
 "use strict";
 
 function drawPolygon(polygon) {
-
-	let max = Math.max(...polygon.p.cirulations);
-	let min = Math.min(...polygon.p.cirulations);
+	let values = [];
+	for(let i = 0; i < polygon.p.data.length; i++) {
+		values[i] = polygon.p.data[i].value;
+	}
+	let max = Math.max(...values);
+	let min = Math.min(...values);
 	console.log(max, min);
 
 	let percent10 = max / 9;
 
 	polygon.object.ctx.beginPath();
 	polygon.object.ctx.fillStyle = "#ffffff";
+
+	let width = polygon.startX;
+	for(let i = 0; i < 24; i++) {
+		let date = new Date(polygon.p.data[i].createtime)
+		console.log(date.getMinutes());
+		let hour = new Date(polygon.p.data[i].createtime).getMinutes();
+		if(hour < 10) {
+			polygon.object.ctx.fillText(hour + "", width - 3, polygon.startY + 10);
+		} else {
+			polygon.object.ctx.fillText(hour + "", width - 6, polygon.startY + 10);
+		}
+		width += polygon.unitWidth;
+	}
 
 	let height = polygon.startY;
 	let heightLabel = 0;
@@ -22,25 +38,25 @@ function drawPolygon(polygon) {
 
 	polygon.object.ctx.strokeStyle = polygon.point.color;
 
-	let width = polygon.startX;
-	height = polygon.startY - (polygon.coordinateHeight - polygon.unitHeight) / max * polygon.p.cirulations[0];
+	width = polygon.startX;
+	height = polygon.startY - (polygon.coordinateHeight - polygon.unitHeight) / max * polygon.p.data[0].value;
 	polygon.object.ctx.beginPath();
 	polygon.object.ctx.arc(width, height, polygon.point.r, 0, Math.PI * 2, true);
 	polygon.object.ctx.fill();
-	polygon.moveData[0] = {width: width, height: height, data: polygon.p.cirulations[0]};
-	for(let i = 0; i < polygon.p.cirulations.length - 1; i++) {
+	polygon.moveData[0] = {width: width, height: height, data: polygon.p.data[0].value};
+	for(let i = 0; i < polygon.p.data.length - 1; i++) {
 		polygon.object.ctx.beginPath();
 		polygon.object.ctx.moveTo(width, height);
 		console.log(polygon.periodUnitWidth);
 		width += polygon.periodUnitWidth;
-		height = polygon.startY - (polygon.coordinateHeight - polygon.unitHeight) / max * polygon.p.cirulations[i + 1];
-	//	console.log(height, max, polygon.p.cirulations[i + 1]);
+		height = polygon.startY - (polygon.coordinateHeight - polygon.unitHeight) / max * polygon.p.data[i + 1].value;
+	//	console.log(height, max, polygon.p.data[i + 1].value);
 		polygon.object.ctx.lineTo(width, height);
 		polygon.object.ctx.stroke();
 		polygon.object.ctx.beginPath();
 		polygon.object.ctx.arc(width, height, polygon.point.r, 0, Math.PI * 2, true);
 		polygon.object.ctx.fill();
-		polygon.moveData[i + 1] = {width: width, height: height, data: polygon.p.cirulations[i + 1]};
+		polygon.moveData[i + 1] = {width: width, height: height, data: polygon.p.data[i + 1].value};
 	}
 
 	let imgData = polygon.object.ctx.getImageData(0, 0, polygon.object.dom.width, polygon.object.dom.height);

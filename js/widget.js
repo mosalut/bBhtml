@@ -111,9 +111,10 @@ Polygon.prototype.draw = function(colorLight, colorBold, fontSize, custom) {
 
 	this.object.ctx.fillText(this.object.dom.dataset.text, this.startX - 14, height - 4);
 
-	width = this.startX;
+//	width = this.startX;
 	this.object.ctx.font = fontSize;
 	this.object.ctx.fillStyle = colorBold;
+	/*
 	for(let i = 0; i < 10; i++) {
 		this.object.ctx.fillText(i + "", width - 3, this.startY + 10);
 		width += this.unitWidth;
@@ -123,6 +124,7 @@ Polygon.prototype.draw = function(colorLight, colorBold, fontSize, custom) {
 		this.object.ctx.fillText(i + "", width - 6, this.startY + 10);
 		width += this.unitWidth;
 	}
+	*/
 
 	custom(this);
 }

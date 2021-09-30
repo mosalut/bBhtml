@@ -9,13 +9,10 @@ var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
 
 var xmlhttpInit
-var xmlhttpCirulations; 
-var xmlhttpWorthdeposits; 
-var xmlhttpFilDrawns; 
-var xmlhttpCfilDrawns; 
+var xmlhttpCurves; 
 var sse;
 
-var cirulationCurve;
+var lowcaseBCurve;
 var worthDepositCurve;
 var filDrawnsCurve;
 var cfilDrawnsCurve;
@@ -31,10 +28,11 @@ function checkSignIn(e) {
 			xmlhttpInit.send();
 			xmlhttpInit.onreadystatechange = initData;
 
-			xmlhttpCirulations.open("GET", networking + "cirulations?account=" + account + "&key=" + key);
-			xmlhttpCirulations.send();
-			xmlhttpCirulations.onreadystatechange = getCirulations;
+			xmlhttpCurves.open("GET", networking + "curves?account=" + account + "&key=" + key);
+			xmlhttpCurves.send();
+			xmlhttpCurves.onreadystatechange = getCurves;
 
+			/*
 			xmlhttpWorthdeposits.open("GET", networking + "worthdeposits?account=" + account + "&key=" + key);
 			xmlhttpWorthdeposits.send();
 			xmlhttpWorthdeposits.onreadystatechange = getWorthDeposits;
@@ -46,6 +44,7 @@ function checkSignIn(e) {
 			xmlhttpCfilDrawns.open("GET", networking + "cfildrawns?account=" + account + "&key=" + key);
 			xmlhttpCfilDrawns.send();
 			xmlhttpCfilDrawns.onreadystatechange = getCfilDrawns;
+			*/
 
 			sseProcess();
 		}
@@ -137,11 +136,7 @@ function initData(e) {
 				return;
 			}
 
-			/*
-			let totalBalance = renderFilNodes(dom, response.data.filNodes);
-			let domb = document.getElementById("capital_b");
-			domb.innerText = totalBalance;
-			*/
+			renderFilNodes(dom, response.data.filnodes);
 		}
 
 		syncOver();
@@ -149,73 +144,33 @@ function initData(e) {
 }
 
 // api response
-function getCirulations(e) {
+function getCurves(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-	//	console.log(response);
+		console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
 			return;
 		}
 
-		cirulationCurve = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
-		cirulationCurve.p = {clear: false, cirulations: response.data}; 
-		cirulationCurve.object.zoomControl(cirulationCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		cirulationCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	}
-
-}
-
-// api response
-function getWorthDeposits(e) {
-	if (e.target.readyState == 4 && e.target.status == 200) {
-		let response = JSON.parse(e.target.responseText);
-	//	console.log(response);
-
-		if(!successed(response)) {
-			console.log(response.message);
-			return;
-		}
+		lowcaseBCurve = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
+		lowcaseBCurve.p = {clear: false, data: response.data.lowcasebs}; 
+		lowcaseBCurve.object.zoomControl(lowcaseBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		lowcaseBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 
 		worthDepositCurve = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
-		worthDepositCurve.p = {clear: false, cirulations: response.data}; 
+		worthDepositCurve.p = {clear: false, data: response.data.worthdeposits}; 
 		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	}
-}
-
-// api response
-function getFilDrawns(e) {
-	if (e.target.readyState == 4 && e.target.status == 200) {
-		let response = JSON.parse(e.target.responseText);
-	//	console.log(response);
-
-		if(!successed(response)) {
-			console.log(response.message);
-			return;
-		}
 
 		filDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
-		filDrawnsCurve.p = {clear: false, cirulations: response.data}; 
+		filDrawnsCurve.p = {clear: false, data: response.data.fildrawns}; 
 		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	}
-}
-
-// api response
-function getCfilDrawns(e) {
-	if (e.target.readyState == 4 && e.target.status == 200) {
-		let response = JSON.parse(e.target.responseText);
-	//	console.log(response);
-
-		if(!successed(response)) {
-			console.log(response.message);
-			return;
-		}
 
 		cfilDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
-		cfilDrawnsCurve.p = {clear: false, cirulations: response.data}; 
+		cfilDrawnsCurve.p = {clear: false, data: response.data.cfildrawns}; 
 		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
@@ -272,17 +227,11 @@ function main() {
 	if (window.XMLHttpRequest) {
 		xmlhttp = new XMLHttpRequest();
 		xmlhttpInit = new XMLHttpRequest();
-		xmlhttpCirulations = new XMLHttpRequest();
-		xmlhttpWorthdeposits = new XMLHttpRequest();
-		xmlhttpFilDrawns = new XMLHttpRequest();
-		xmlhttpCfilDrawns = new XMLHttpRequest();
+		xmlhttpCurves = new XMLHttpRequest();
 	} else {
 		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		xmlhttpInit = new ActiveXObject("Microsoft.XMLHTTP");
-		xmlhttpCirulations = new ActiveXObject("Microsoft.XMLHTTP");
-		xmlhttpWorthdeposits = new ActiveXObject("Microsoft.XMLHTTP");
-		xmlhttpFilDrawns = new ActiveXObject("Microsoft.XMLHTTP");
-		xmlhttpCfilDrawns = new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttpCurves = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 
 	xmlhttp.open("POST", networking + "checksignin");
@@ -393,7 +342,7 @@ function sseProcess() {
 	})
 	
 	// B锁仓量投资FIL节点
-	sse.addEventListener("filNodes", function(e) {
+	sse.addEventListener("filnodes", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
@@ -410,21 +359,22 @@ function sseProcess() {
 		let totalBalance = renderFilNodes(dom, response.data);
 	})
 
-	sse.addEventListener("cirulations", function(e) {
+	sse.addEventListener("lowcasebs", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		cirulationCurve.object.ctx.clearRect(0, 0, cirulationCurve.object.dom.width, cirulationCurve.object.dom.height);
-		cirulationCurve.p = {clear: true, cirulations: response.data}; 
-		cirulationCurve.object.zoomControl(cirulationCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		cirulationCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		lowcaseBCurve.object.ctx.clearRect(0, 0, lowcaseBCurve.object.dom.width, lowcaseBCurve.object.dom.height);
+		lowcaseBCurve.p = {clear: true, data: response.data}; 
+		lowcaseBCurve.object.zoomControl(lowcaseBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		lowcaseBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
 	sse.addEventListener("worthdeposits", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		worthDepositCurve.p = {clear: true, cirulations: response.data}; 
+		worthDepositCurve.object.ctx.clearRect(0, 0, worthDepositCurve.object.dom.width, worthDepositCurve.object.dom.height);
+		worthDepositCurve.p = {clear: true, data: response.data}; 
 		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
@@ -433,7 +383,8 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		filDrawnsCurve.p = {clear: true, cirulations: response.data}; 
+		filDrawnsCurve.object.ctx.clearRect(0, 0, filDrawnsCurve.object.dom.width, filDrawnsCurve.object.dom.height);
+		filDrawnsCurve.p = {clear: true, data: response.data}; 
 		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
@@ -442,7 +393,8 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		cfilDrawnsCurve.p = {clear: true, cirulations: response.data}; 
+		cfilDrawnsCurve.object.ctx.clearRect(0, 0, cfilDrawnsCurve.object.dom.width, cfilDrawnsCurve.object.dom.height);
+		cfilDrawnsCurve.p = {clear: true, data: response.data}; 
 		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
