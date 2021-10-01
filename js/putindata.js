@@ -1,6 +1,8 @@
 "use strict";
 
 function drawPolygon(polygon) {
+	console.log(polygon.p.data, "xxxxxxxxxxxxxxxxxxx");
+	return;
 	let values = [];
 	for(let i = 0; i < polygon.p.data.length; i++) {
 		values[i] = polygon.p.data[i].value;
@@ -33,7 +35,7 @@ function drawPolygon(polygon) {
 		height -= polygon.unitHeight;
 		heightLabel += percent10;
 		let fixedHeightLabel = heightLabel.toFixed(2);
-		polygon.object.ctx.fillText(fixedHeightLabel + "", polygon.startX - 48, height);
+		polygon.object.ctx.fillText(fixedHeightLabel + "", polygon.startX - 44, height + 4);
 	}
 
 	polygon.object.ctx.strokeStyle = polygon.point.color;
@@ -56,7 +58,7 @@ function drawPolygon(polygon) {
 		polygon.object.ctx.beginPath();
 		polygon.object.ctx.arc(width, height, polygon.point.r, 0, Math.PI * 2, true);
 		polygon.object.ctx.fill();
-		polygon.moveData[i + 1] = {width: width, height: height, data: polygon.p.data[i + 1].value};
+		polygon.moveData[i + 1] = {width: width, height: height, data: polygon.p.data[i + 1].value.toFixed(4)};
 	}
 
 	let imgData = polygon.object.ctx.getImageData(0, 0, polygon.object.dom.width, polygon.object.dom.height);

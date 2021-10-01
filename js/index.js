@@ -12,10 +12,7 @@ var xmlhttpInit
 var xmlhttpCurves; 
 var sse;
 
-var lowcaseBCurve;
-var worthDepositCurve;
-var filDrawnsCurve;
-var cfilDrawnsCurve;
+var curve = {lowcaseB: [], capitalBCurve: [], filDrawnsCurve: [], cfToFCurve: []};
 
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
@@ -31,20 +28,6 @@ function checkSignIn(e) {
 			xmlhttpCurves.open("GET", networking + "curves?account=" + account + "&key=" + key);
 			xmlhttpCurves.send();
 			xmlhttpCurves.onreadystatechange = getCurves;
-
-			/*
-			xmlhttpWorthdeposits.open("GET", networking + "worthdeposits?account=" + account + "&key=" + key);
-			xmlhttpWorthdeposits.send();
-			xmlhttpWorthdeposits.onreadystatechange = getWorthDeposits;
-
-			xmlhttpFilDrawns.open("GET", networking + "fildrawns?account=" + account + "&key=" + key);
-			xmlhttpFilDrawns.send();
-			xmlhttpFilDrawns.onreadystatechange = getFilDrawns;
-
-			xmlhttpCfilDrawns.open("GET", networking + "cfildrawns?account=" + account + "&key=" + key);
-			xmlhttpCfilDrawns.send();
-			xmlhttpCfilDrawns.onreadystatechange = getCfilDrawns;
-			*/
 
 			sseProcess();
 		}
@@ -108,7 +91,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = floatNumberProcess(response.data.capitalb);
+			dom.innerText = response.data.capitalb.toFixed(4);
 		}
 
 		{
@@ -154,25 +137,25 @@ function getCurves(e) {
 			return;
 		}
 
-		lowcaseBCurve = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
-		lowcaseBCurve.p = {clear: false, data: response.data.lowcasebs}; 
-		lowcaseBCurve.object.zoomControl(lowcaseBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		lowcaseBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.lowcaseB = new Polygon(document.querySelectorAll("#curve canvas")[0], 1, {color: "#09c271", r: 4});
+		curve.lowcaseB.p = {clear: false, data: response.data.lowcasebs}; 
+		curve.lowcaseB.object.zoomControl(curve.lowcaseB, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.lowcaseB.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 
-		worthDepositCurve = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
-		worthDepositCurve.p = {clear: false, data: response.data.worthdeposits}; 
-		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.capitalB = new Polygon(document.querySelectorAll("#curve canvas")[1], 1, {color: "#09c271", r: 4});
+		curve.capitalB.p = {clear: false, data: response.data.capitalbs}; 
+		curve.capitalB.object.zoomControl(curve.capitalB, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.capitalB.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 
-		filDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
-		filDrawnsCurve.p = {clear: false, data: response.data.fildrawns}; 
-		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.filDrawns = new Polygon(document.querySelectorAll("#curve canvas")[2], 1, {color: "#09c271", r: 4});
+		curve.filDrawns.p = {clear: false, data: response.data.fildrawns}; 
+		curve.filDrawns.object.zoomControl(curve.filDrawns, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.filDrawns.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 
-		cfilDrawnsCurve = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
-		cfilDrawnsCurve.p = {clear: false, data: response.data.cfildrawns}; 
-		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.cfToF = new Polygon(document.querySelectorAll("#curve canvas")[3], 12, {color: "#770000", r: 1});
+		curve.cfToF.p = {clear: false, data: response.data.cftofs}; 
+		curve.cfToF.object.zoomControl(curve.cfToF, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.cfToF.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	}
 }
 
@@ -298,19 +281,42 @@ function sseProcess() {
 		dom.innerText = "1:" + response.data.toFixed(2);
 	})
 	
-	// 可流通量b
+	// 流动余额b
 	sse.addEventListener("lowcaseb", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
-		let domLowcase = document.getElementById("lowcase_b");
+		let dom = document.getElementById("lowcase_b");
 
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
 
-		domLowcase.innerText = response.data.toFixed(4);
+		dom.innerText = response.data.toFixed(4);
+
+		syncOver();
+
+		console.log(curve.lowcaseB.p.data.slice(1), "yyyyyyyyyyyyyy")
+		curve.lowcaseB.p.data = curve.lowcaseB.p.data.slice(1).push(response.data);
+		curve.lowcaseB.object.ctx.clearRect(0, 0, curve.lowcaseB.object.dom.width, curve.lowcaseB.object.dom.height);
+		curve.lowcaseB.object.zoomControl(curve.lowcaseB, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.lowcaseB.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+	})
+
+	// 质押余额
+	sse.addEventListener("capitalb", function(e) {
+		let response = JSON.parse(e.data);
+	//	console.log(response);
+
+		let dom = document.getElementById("capitalb");
+
+		if(!response.success) {
+			dom.innerText = response.message;
+			return;
+		}
+
+		dom.innerText = response.data.toFixed(4);
 
 		syncOver();
 	})
@@ -369,14 +375,14 @@ function sseProcess() {
 		lowcaseBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
-	sse.addEventListener("worthdeposits", function(e) {
+	sse.addEventListener("capitals", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		worthDepositCurve.object.ctx.clearRect(0, 0, worthDepositCurve.object.dom.width, worthDepositCurve.object.dom.height);
-		worthDepositCurve.p = {clear: true, data: response.data}; 
-		worthDepositCurve.object.zoomControl(worthDepositCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		worthDepositCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		capitalBCurve.object.ctx.clearRect(0, 0, capitalBCurve.object.dom.width, capitalBCurve.object.dom.height);
+		capitalBCurve.p = {clear: true, data: response.data}; 
+		capitalBCurve.object.zoomControl(capitalBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		capitalBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
 	sse.addEventListener("fildrawns", function(e) {
@@ -389,14 +395,14 @@ function sseProcess() {
 		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
-	sse.addEventListener("cfildrawns", function(e) {
+	sse.addEventListener("cftofs", function(e) {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 		
-		cfilDrawnsCurve.object.ctx.clearRect(0, 0, cfilDrawnsCurve.object.dom.width, cfilDrawnsCurve.object.dom.height);
-		cfilDrawnsCurve.p = {clear: true, data: response.data}; 
-		cfilDrawnsCurve.object.zoomControl(cfilDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		cfilDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cfToFCurve.object.ctx.clearRect(0, 0, cfToFCurve.object.dom.width, cfToFCurve.object.dom.height);
+		cfToFCurve.p = {clear: true, data: response.data}; 
+		cfToFCurve.object.zoomControl(cfToFCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		cfToFCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
 	// keep alive
