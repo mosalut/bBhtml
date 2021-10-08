@@ -7,6 +7,7 @@ const filNodeColumns = {"address":"所有者", "workerbalance": "worker余额", 
 
 var key = sessionStorage.getItem("Bb_key");
 var account = sessionStorage.getItem("Bb_account");
+var name = sessionStorage.getItem("Bb_name");
 
 var xmlhttpInit
 var xmlhttpCurves; 
@@ -197,7 +198,7 @@ function main() {
 	}
 
 	let accountName = document.querySelector("header #account");
-	accountName.value = account;
+	accountName.value = name;
 
 	let signoutButton = document.querySelector("header #signout");
 	signoutButton.onclick = signout

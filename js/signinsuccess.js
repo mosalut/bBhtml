@@ -9,6 +9,7 @@ function GetQueryString(name) {
 function main() {
 	let key = GetQueryString("key");
 	let account = GetQueryString("account");
+	let name = GetQueryString("name");
 	if(key == null || account == null) {
 		window.location.href = "/signin.html";
 		return;
@@ -16,6 +17,7 @@ function main() {
 
 	sessionStorage.setItem("Bb_key", key);
 	sessionStorage.setItem("Bb_account", account);
+	sessionStorage.setItem("Bb_name", name);
 
 	let success = document.getElementsByTagName("input")[0];
 	success.value = "sign in success";
