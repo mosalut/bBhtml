@@ -12,7 +12,7 @@ var xmlhttpInit
 var xmlhttpCurves; 
 var sse;
 
-var curve = {lowcaseB: [], capitalBCurve: [], filDrawnsCurve: [], cfToFCurve: []};
+var curve = {lowcaseB: [], capitalB: [], filDrawns: [], cfToF: []};
 
 function checkSignIn(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
@@ -91,6 +91,7 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
+			console.log(response.data.capitalb);
 			dom.innerText = response.data.capitalb.toFixed(4);
 		}
 
@@ -130,7 +131,7 @@ function initData(e) {
 function getCurves(e) {
 	if (e.target.readyState == 4 && e.target.status == 200) {
 		let response = JSON.parse(e.target.responseText);
-		console.log(response);
+	//	console.log(response);
 
 		if(!successed(response)) {
 			console.log(response.message);
@@ -278,7 +279,15 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = "1:" + response.data.toFixed(2);
+		dom.innerText = "1:" + response.data.value.toFixed(2);
+
+		/*
+		curve.cfToF.p.data = curve.cfToF.p.data.slice(1)
+		curve.cfToF.p.data.push(response.data);
+		curve.cfToF.object.ctx.clearRect(0, 0, curve.cfToF.object.dom.width, curve.cfToF.object.dom.height);
+		curve.cfToF.object.zoomControl(curve.cfToF, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.cfToF.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		*/
 	})
 	
 	// 流动余额b
@@ -293,12 +302,12 @@ function sseProcess() {
 			return;
 		}
 
-		dom.innerText = response.data.toFixed(4);
+		dom.innerText = response.data.value.toFixed(4);
 
 		syncOver();
 
-		console.log(curve.lowcaseB.p.data.slice(1), "yyyyyyyyyyyyyy")
-		curve.lowcaseB.p.data = curve.lowcaseB.p.data.slice(1).push(response.data);
+		curve.lowcaseB.p.data = curve.lowcaseB.p.data.slice(1)
+		curve.lowcaseB.p.data.push(response.data);
 		curve.lowcaseB.object.ctx.clearRect(0, 0, curve.lowcaseB.object.dom.width, curve.lowcaseB.object.dom.height);
 		curve.lowcaseB.object.zoomControl(curve.lowcaseB, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		curve.lowcaseB.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
@@ -309,16 +318,22 @@ function sseProcess() {
 		let response = JSON.parse(e.data);
 	//	console.log(response);
 
-		let dom = document.getElementById("capitalb");
+		let dom = document.getElementById("capital_b");
 
 		if(!response.success) {
 			dom.innerText = response.message;
 			return;
 		}
 
-		dom.innerText = response.data.toFixed(4);
+		dom.innerText = response.data.value.toFixed(4);
 
 		syncOver();
+
+		curve.capitalB.p.data = curve.capitalB.p.data.slice(1)
+		curve.capitalB.p.data.push(response.data);
+		curve.capitalB.object.ctx.clearRect(0, 0, curve.capitalB.object.dom.width, curve.capitalB.object.dom.height);
+		curve.capitalB.object.zoomControl(curve.capitalB, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.capitalB.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
 	// 损耗值
@@ -344,7 +359,13 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = response.data.toFixed(4);
+		dom.innerText = response.data.value.toFixed(4);
+
+		curve.filDrawns.p.data = curve.filDrawns.p.data.slice(1)
+		curve.filDrawns.p.data.push(response.data);
+		curve.filDrawns.object.ctx.clearRect(0, 0, curve.filDrawns.object.dom.width, curve.filDrawns.object.dom.height);
+		curve.filDrawns.object.zoomControl(curve.filDrawns, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
+		curve.filDrawns.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 	
 	// B锁仓量投资FIL节点
@@ -363,46 +384,6 @@ function sseProcess() {
 		}
 
 		let totalBalance = renderFilNodes(dom, response.data);
-	})
-
-	sse.addEventListener("lowcasebs", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-		
-		lowcaseBCurve.object.ctx.clearRect(0, 0, lowcaseBCurve.object.dom.width, lowcaseBCurve.object.dom.height);
-		lowcaseBCurve.p = {clear: true, data: response.data}; 
-		lowcaseBCurve.object.zoomControl(lowcaseBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		lowcaseBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	})
-
-	sse.addEventListener("capitals", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-		
-		capitalBCurve.object.ctx.clearRect(0, 0, capitalBCurve.object.dom.width, capitalBCurve.object.dom.height);
-		capitalBCurve.p = {clear: true, data: response.data}; 
-		capitalBCurve.object.zoomControl(capitalBCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		capitalBCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	})
-
-	sse.addEventListener("fildrawns", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-		
-		filDrawnsCurve.object.ctx.clearRect(0, 0, filDrawnsCurve.object.dom.width, filDrawnsCurve.object.dom.height);
-		filDrawnsCurve.p = {clear: true, data: response.data}; 
-		filDrawnsCurve.object.zoomControl(filDrawnsCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		filDrawnsCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-	})
-
-	sse.addEventListener("cftofs", function(e) {
-		let response = JSON.parse(e.data);
-	//	console.log(response);
-		
-		cfToFCurve.object.ctx.clearRect(0, 0, cfToFCurve.object.dom.width, cfToFCurve.object.dom.height);
-		cfToFCurve.p = {clear: true, data: response.data}; 
-		cfToFCurve.object.zoomControl(cfToFCurve, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		cfToFCurve.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 	})
 
 	// keep alive

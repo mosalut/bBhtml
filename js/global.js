@@ -28,3 +28,10 @@ function loading(dom) {
 		}
 	}, 100);
 }
+
+var getHours = [
+	function(date) {return date.getHours();},
+	function(date) {return date.getMinutes();}
+];
+
+var getHour = getHours[1];
