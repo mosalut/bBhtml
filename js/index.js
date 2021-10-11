@@ -102,7 +102,8 @@ function initData(e) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = response.data.loss.toFixed(2) + "%";
+
+		//	dom.innerText = response.data.loss.toFixed(2) + "%";
 		}
 
 		{
@@ -273,7 +274,6 @@ function sseProcess() {
 	// CFIL:FIL
 	sse.addEventListener("cfiltofil", function(e) {
 		let response = JSON.parse(e.data);
-	//	console.log(response);
 
 		let dom = document.getElementById("cfil_to_fil");
 		if(!response.success) {
@@ -282,13 +282,11 @@ function sseProcess() {
 		}
 		dom.innerText = "1:" + response.data.value.toFixed(2);
 
-		/*
 		curve.cfToF.p.data = curve.cfToF.p.data.slice(1)
 		curve.cfToF.p.data.push(response.data);
 		curve.cfToF.object.ctx.clearRect(0, 0, curve.cfToF.object.dom.width, curve.cfToF.object.dom.height);
 		curve.cfToF.object.zoomControl(curve.cfToF, COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
 		curve.cfToF.draw(COLORLIGHT, COLORBOLD, FONTSIZE, drawPolygon);
-		*/
 	})
 	
 	// 流动余额b
