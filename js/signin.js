@@ -11,6 +11,18 @@ window.onload = function() {
 	let account = document.getElementsByName("account")[0];
 
 	codeB.onclick = function(e) {
+		codeB.setAttribute("disabled", true);
+		let seconds = 60;
+		let t = window.setInterval(function() {
+			codeB.value = seconds--;
+			if(seconds == 0) {
+				codeB.value = "get code";
+				codeB.removeAttribute("disabled");
+				window.clearInterval(t);
+				return;
+			}
+		}, 1000);
+
 		xmlhttp.open("POST", networking + "code")
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		console.log(account.value);
@@ -20,19 +32,7 @@ window.onload = function() {
 				let response = JSON.parse(e.target.responseText);
 				console.log(response);
 
-				if(response.success) {
-					codeB.setAttribute("disabled", true);
-					let seconds = 60;
-					let t = window.setInterval(function() {
-						codeB.value = seconds--;
-						if(seconds == 0) {
-							codeB.value = "get code";
-							codeB.removeAttribute("disabled");
-							window.clearInterval(t);
-							return;
-						}
-					}, 1000);
-				} else {
+				if(!response.success) {
 					console.log(response.message);
 				}
 			}
