@@ -59,34 +59,34 @@ function initData(e) {
 			return;
 		}
 
-		{
+		(function(response) {
 			let dom = document.getElementById("apy_rate");
 			if(!response.success) {
 				dom.innerText = response.message;
 				return;
 			}
 			dom.innerText = response.data.apyrate.toFixed(2) + "%";
-		}
+		})(response);
 
-		{
+		(function(response) {
 			let dom = document.getElementById("cfil_to_fil");
 			if(!response.success) {
 				dom.innerText = response.message;
 				return;
 			}
-			dom.innerText = "1:" + response.data.cfiltofil.toFixed(2);
-		}
+			dom.innerText = response.data.cfiltofil.toFixed(2) + ":1";
+		})(response);
 
-		{
+		(function(response) {
 			let dom = document.getElementById("lowcase_b");
 			if(!response.success) {
 				dom.innerText = response.message;
 				return;
 			}
 			dom.innerText = response.data.lowcaseb.toFixed(4);
-		}
+		})(response);
 
-		{
+		(function(response) {
 			let dom = document.getElementById("capital_b");
 			if(!response.success) {
 				dom.innerText = response.message;
@@ -94,36 +94,25 @@ function initData(e) {
 			}
 			console.log(response.data.capitalb);
 			dom.innerText = response.data.capitalb.toFixed(4);
-		}
+		})(response);
 
-		{
-			let dom = document.getElementById("loss");
-			if(!response.success) {
-				dom.innerText = response.message;
-				return;
-			}
-
-		//	dom.innerText = response.data.loss.toFixed(2) + "%";
-		}
-
-		{
+		(function(response) {
 			let dom = document.getElementById("drawn_fil");
 			if(!response.success) {
 				dom.innerText = response.message;
 				return;
 			}
 			dom.innerText = response.data.drawnfil.toFixed(4);
-		}
+		})(response);
 
-		{
+		(function(response) {
 			let dom = document.querySelector("#lockedFilNode>ul");
 			if(!response.success) {
 				dom.innerText = response.message;
 				return;
 			}
-
 			renderFilNodes(dom, response.data.filnodes);
-		}
+		})(response);
 
 		syncOver();
 	}
@@ -232,12 +221,24 @@ function syncOver() {
 	document.getElementById("total_put_in").innerText = lowcaseb + capitalb; // 最新总资产
 
 	let lrr = (lowcaseb / (lowcaseb + capitalb) * 100)
-	let dom = document.getElementById("lrr");
+	let domLrr = document.getElementById("lrr");
 	if(isNaN(lrr)) {
-		dom.innerText = 0 + "%";
-		return
+		domLrr.innerText = 0 + "%";
 	}
-	dom.innerText = lrr.toFixed(2) + "%"; // 准备金率
+	domLrr.innerText = lrr.toFixed(2) + "%"; // 准备金率
+
+	let domLoss = document.getElementById("loss");
+	let k = 1 / (lowcaseb / capitalb * 9);
+	console.log("k:", k);
+	if(isNaN(k) || k == Infinity) {
+		domLoss.innerText = "--";
+	} else {
+		let loss = 0;
+		for(let i = 1; i <= k; i++) {
+			loss += Math.pow(1 / 2, i);
+		}
+		domLoss.innerText = loss.toFixed(2) + "%"; // 当前提现折扣率
+	}
 }
 
 // sse response
@@ -280,7 +281,7 @@ function sseProcess() {
 			dom.innerText = response.message;
 			return;
 		}
-		dom.innerText = "1:" + response.data.value.toFixed(2);
+		dom.innerText = response.data.value.toFixed(2) + ":1";
 
 		curve.cfToF.p.data = curve.cfToF.p.data.slice(1)
 		curve.cfToF.p.data.push(response.data);
